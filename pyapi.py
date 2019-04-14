@@ -22,9 +22,7 @@ def get_basic(url=api_url):
 
 
 def req_to_df(req):
-	res = req.content
-
-	resp = json.loads(res)
+	resp = parse_req_json(req)
 
 	if isinstance(resp, dict):
 		resp = [resp]
@@ -36,6 +34,10 @@ def req_to_df(req):
 		raise e
 
 	return pd
+
+
+def parse_req_json(req):
+    return json.loads(req.content)
 
 
 def req_to_df_unpack_dict(req):
@@ -52,10 +54,7 @@ def req_to_df_unpack_dict(req):
 
 	"""
 
-	res = req.content
-
-	# parse response json
-	resp = json.loads(res)
+	resp = parse_req_json(req)
 
 	# response check
 	if isinstance(resp, dict):
@@ -130,9 +129,7 @@ def get_comments():
 	usrname = input("Enter the username:")
 	url = api_url+usrname+"/events"
 	req = requests.get(url)
-	res = req.content
-	# print res
-	resp = json.loads(res)
+	resp = parse_req_json(req)
 
 	pprint.pprint(resp)
 
