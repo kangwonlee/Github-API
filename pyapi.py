@@ -39,7 +39,7 @@ def get_page_033():
 
 	pd = get_basic(repos_url)
 
-	pprint.pprint(pd)
+	pprint.pprint(pd['owner'])
 
 
 def get_comments():
@@ -61,4 +61,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_030()
+	get_page_033()
