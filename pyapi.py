@@ -157,6 +157,25 @@ def url_repo_comments(owner, repo):
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
 
 
+def payload_repo_commit_comment(body_str=False, path_str=False, position_int=False):
+	"""
+	Prepare the payload for a comment
+	ref : https://developer.github.com/v3/repos/comments/#input
+	"""
+
+	assert body_str
+
+	result = {'body':body_str,}
+
+	if path_str:
+		result['path'] = str(path_str)
+
+	if position_int:
+		result['position'] = int(position_int)
+
+	return result
+
+
 def main(argv):
 	if argv:
 		pprint.pprint(get_repo_comments_public(argv[0], argv[1], b_verbose=True))
