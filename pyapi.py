@@ -1,5 +1,6 @@
 # https://github.com/msaisushma/Github-API
 # Dawson & Straub, Building Tools with GitHub
+# Jason McVetta, Password Privacy, Generate a Github OAuth2 Token, https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
 import json
 import pprint
