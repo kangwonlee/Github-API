@@ -113,6 +113,24 @@ def get_page_039():
 	pprint.pprint(df)
 
 
+def get_page_49():
+	# http://docs.python-requests.org/en/master/user/authentication/
+	# https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+
+	api_auth_url = up.urljoin(api_url, 'rate_limit')
+
+	note = 'rate check practice' # input('Note (optional): ')
+	payload = {}
+	if note :
+		payload['note'] = note
+
+	df = pandas.DataFrame.from_dict(
+			parse_req_json(reg_get_auth(api_auth_url, payload))
+		)
+
+	pprint.pprint(df)
+
+
 def reg_get_auth(auth_url, payload):
     req = requests.get(
                     auth_url, 
@@ -142,4 +160,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_039()
+	get_page_49()
