@@ -62,18 +62,21 @@ def get_page_039():
 	if note :
 		payload['note'] = note
 
-	req = requests.get(
-			api_auth_url, 
-			auth=requests.auth.HTTPBasicAuth(
-					input('Github username: '), 
-					getpass.getpass('Github password: ')
-				),
-			data=json.dumps(payload)
-		)
-
-	df = req_to_df(req)
+	df = req_to_df(reg_get_auth(api_auth_url, payload))
 
 	pprint.pprint(df)
+
+
+def reg_get_auth(auth_url, payload):
+    req = requests.get(
+                    auth_url, 
+                    auth=requests.auth.HTTPBasicAuth(
+                                    input('Github username: '), 
+                                    getpass.getpass('Github password: ')
+                            ),
+                    data=json.dumps(payload)
+            )
+    return req
 
 
 def get_comments():
