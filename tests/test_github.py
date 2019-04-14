@@ -21,3 +21,15 @@ def test_get_repo_comments_public():
     assert 'https' == parse.scheme
     assert parse.netloc.endswith('github.com')
     assert parse.path.endswith(str(id))
+
+
+def test_url_repo_comments():
+    owner = 'octocat'
+    repo = 'Hello-World'
+
+    parse = up.urlparse(pyapi.url_repo_comments(owner, repo))
+
+    assert 'https' == parse.scheme
+    assert parse.netloc.endswith('github.com')
+    assert owner in parse.path
+    assert repo in parse.path
