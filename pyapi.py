@@ -11,8 +11,7 @@ api_url = "https://api.github.com/"
 api_user_url = "https://api.github.com/users"
 
 
-def get_basic():
-	url = api_url
+def get_basic(url=api_url):
 	req = requests.get(url)
 	res = req.content
 
@@ -27,8 +26,11 @@ def get_basic():
 		pprint.pprint(resp)
 		raise e
 
-	pprint.pprint(pd)
-	pprint.pprint(pd.columns)
+	return pd
+
+
+def get_page_030():
+	pprint.pprint(get_basic())
 
 
 def get_comments():
@@ -48,5 +50,6 @@ def get_comments():
 	for _, v in payload.items():
 		print(v['html_url'])
 
+
 if __name__ == '__main__':
-	get_basic()
+	get_page_030()
