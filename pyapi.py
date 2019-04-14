@@ -157,6 +157,33 @@ def url_repo_comments(owner, repo):
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
 
 
+class GitHub(object):
+	"""
+	Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
+	"""
+	def __init__(self, **config_options):
+		self.__dict__.update(**config_options)
+		self.session = requests.Session()
+		if hasattr(self, 'api_token'):
+			self.session.headers['Authorization'] = f'token {self.api_token}'
+
+	def call_to_the_api(self, *args):
+		url = ''
+		return self.session.post(url)
+
+	def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
+		"""
+		Post a comment to a commit of an owner's one repostory
+		POST /repos/:owner/:repo/commits/:sha/comments
+
+		https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+		"""
+		url = url_repo_commit_comment(owner, repo, sha)
+		payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
+
+		self.session.post(url, json=payload)
+
+
 def url_repo_commit_comment(owner, repo, sha):
 	"""
 	POST /repos/:owner/:repo/commits/:sha/comments
