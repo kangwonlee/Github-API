@@ -13,6 +13,12 @@ api_user_url = "https://api.github.com/users"
 
 def get_basic(url=api_url):
 	req = requests.get(url)
+	pd = req_to_df(req)
+
+	return pd
+
+
+def req_to_df(req):
 	res = req.content
 
 	resp = json.loads(res)
