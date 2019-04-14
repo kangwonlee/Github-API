@@ -4,7 +4,9 @@
 
 import getpass
 import json
+import os
 import pprint
+import sys
 import urllib.parse as up
 
 import pandas
@@ -143,6 +145,20 @@ def reg_get_auth(auth_url, payload):
     return req
 
 
+def get_repo_comments_public(owner, repo, b_verbose=False):
+	url = up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
+	if b_verbose:
+		print(f'get_repos_public() : url = {url}')
+	return(get_basic(url))
+
+
+def main(argv):
+	if argv:
+		pprint.pprint(get_repo_comments_public(argv[0], argv[1], b_verbose=True))
+	else:
+		print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
+
+
 def get_comments():
 	usrname = input("Enter the username:")
 	url = api_url+usrname+"/events"
@@ -160,4 +176,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_49()
+	main(sys.argv[1:])
