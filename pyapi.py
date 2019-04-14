@@ -18,7 +18,14 @@ def get_basic():
 
 	resp = json.loads(res)
 
+	if isinstance(resp, dict):
+		resp = [resp]
+
+	try:
 		pd = pandas.DataFrame(resp)
+	except BaseException as e:
+		pprint.pprint(resp)
+		raise e
 
 	pprint.pprint(pd)
 	pprint.pprint(pd.columns)
