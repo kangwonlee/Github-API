@@ -20,6 +20,7 @@ def get_basic():
 	pd = pandas.DataFrame(resp)
 
 	pprint.pprint(pd)
+	pprint.pprint(pd.columns)
 
 
 def get_comments():
