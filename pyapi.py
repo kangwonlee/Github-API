@@ -146,10 +146,15 @@ def reg_get_auth(auth_url, payload):
 
 
 def get_repo_comments_public(owner, repo, b_verbose=False):
-	url = up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
+	url = url_repo_comments(owner, repo)
 	if b_verbose:
 		print(f'get_repos_public() : url = {url}')
 	return(get_basic(url))
+
+
+def url_repo_comments(owner, repo):
+	# https://developer.github.com/v3/pulls/comments/#list-comments-in-a-repository
+    return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
 
 
 def main(argv):
