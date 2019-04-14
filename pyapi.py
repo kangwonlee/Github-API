@@ -30,7 +30,8 @@ def get_basic(url=api_url):
 
 
 def get_page_030():
-	pprint.pprint(get_basic())
+	pd = get_basic()
+	print(pd['current_user_url'])
 
 
 def get_page_033():
@@ -60,4 +61,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_033()
+	get_page_030()
