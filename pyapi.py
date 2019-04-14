@@ -4,6 +4,7 @@
 import json
 import pprint
 
+import pandas
 import requests
 
 api_url = "https://api.github.com/users"
@@ -16,7 +17,9 @@ def get_basic():
 
 	resp = json.loads(res)
 
-	pprint.pprint(resp)
+	pd = pandas.DataFrame(resp)
+
+	pprint.pprint(pd)
 
 
 def get_comments():
