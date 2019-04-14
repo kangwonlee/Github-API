@@ -9,6 +9,16 @@ import requests
 api_url = "https://api.github.com/users"
 
 
+def get_basic():
+	url = api_url
+	req = requests.get(url)
+	res = req.content
+
+	resp = json.loads(res)
+
+	pprint.pprint(resp)
+
+
 def get_comments():
 	usrname = input("Enter the username:")
 	url = api_url+usrname+"/events"
@@ -27,4 +37,4 @@ def get_comments():
 		print(v['html_url'])
 
 if __name__ == '__main__':
-	get_comments()
+	get_basic()
