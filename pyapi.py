@@ -38,6 +38,53 @@ def req_to_df(req):
 	return pd
 
 
+def req_to_df_unpack_dict(req):
+	"""
+	request to DataFrame unpacking nested dictionaries
+
+	req : list of dictionaries (or nested dictionaries)
+			[
+			   {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str'}},
+			   {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str'}},
+			   {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str'}},
+			   {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str'}},
+			]
+
+	"""
+
+	res = req.content
+
+	# parse response json
+	resp = json.loads(res)
+
+	# response check
+	if isinstance(resp, dict):
+		raise ValueError(f'dict : {resp}')
+
+	# unpack nested dictionaries into simpler dictionaries
+	rows = []
+	for d in resp:
+		row = {}
+		for k in d.keys():
+			keys = [k]
+			if isinstance(d[k], dict):
+				for dk in d[k]:
+					keys.append(dk)
+					# recursion possible?
+					row['.'.join(keys)] = d[k][dk]
+			else:
+				row[k] = d[k]
+		rows.append(row)
+
+	try:
+		pd = pandas.DataFrame(rows)
+	except BaseException as e:
+		pprint.pprint(rows)
+		raise e
+
+	return pd
+
+
 def get_page_030():
 	pd = get_basic()
 	print(pd['current_user_url'])
