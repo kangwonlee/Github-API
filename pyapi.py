@@ -33,6 +33,14 @@ def get_page_030():
 	pprint.pprint(get_basic())
 
 
+def get_page_033():
+	repos_url = '/'.join((api_user_url, 'xrd', 'repos'))
+
+	pd = get_basic(repos_url)
+
+	pprint.pprint(pd)
+
+
 def get_comments():
 	usrname = input("Enter the username:")
 	url = api_url+usrname+"/events"
@@ -52,4 +60,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_030()
+	get_page_033()
