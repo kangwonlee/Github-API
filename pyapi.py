@@ -7,7 +7,8 @@ import pprint
 import pandas
 import requests
 
-api_url = "https://api.github.com/users"
+api_url = "https://api.github.com/"
+api_user_url = "https://api.github.com/users"
 
 
 def get_basic():
@@ -17,7 +18,7 @@ def get_basic():
 
 	resp = json.loads(res)
 
-	pd = pandas.DataFrame(resp)
+		pd = pandas.DataFrame(resp)
 
 	pprint.pprint(pd)
 	pprint.pprint(pd.columns)
