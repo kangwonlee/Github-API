@@ -157,6 +157,14 @@ def url_repo_comments(owner, repo):
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
 
 
+def url_repo_commit_comment(owner, repo, sha):
+	"""
+	POST /repos/:owner/:repo/commits/:sha/comments
+	ref : https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+	"""
+	return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits', sha, 'comments')))
+
+
 def payload_repo_commit_comment(body_str=False, path_str=False, position_int=False):
 	"""
 	Prepare the payload for a comment
