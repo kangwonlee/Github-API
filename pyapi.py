@@ -57,16 +57,17 @@ def get_page_039():
 
 	api_auth_url = up.urljoin(api_url, 'authorizations')
 
-	note = input('Note (optional): ')
+	note = 'OAuth practice' # input('Note (optional): ')
 	payload = {}
 	if note :
 		payload['note'] = note
 
-	auth = requests.auth.HTTPBasicAuth(input('Github username: '), getpass.getpass('Github password: '))
-
 	req = requests.get(
 			api_auth_url, 
-			auth=auth,
+			auth=requests.auth.HTTPBasicAuth(
+					input('Github username: '), 
+					getpass.getpass('Github password: ')
+				),
 			data=json.dumps(payload)
 		)
 
