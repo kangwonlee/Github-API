@@ -5,6 +5,7 @@
 import getpass
 import json
 import pprint
+import urllib.parse as up
 
 import pandas
 import requests
@@ -50,6 +51,30 @@ def get_page_033():
 	pprint.pprint(pd['owner'][0]['id'])
 
 
+def get_page_039():
+	# http://docs.python-requests.org/en/master/user/authentication/
+	# https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+
+	api_auth_url = up.urljoin(api_url, 'authorizations')
+
+	note = input('Note (optional): ')
+	payload = {}
+	if note :
+		payload['note'] = note
+
+	auth = requests.auth.HTTPBasicAuth(input('Github username: '), getpass.getpass('Github password: '))
+
+	req = requests.get(
+			api_auth_url, 
+			auth=auth,
+			data=json.dumps(payload)
+		)
+
+	df = req_to_df(req)
+
+	pprint.pprint(df)
+
+
 def get_comments():
 	usrname = input("Enter the username:")
 	url = api_url+usrname+"/events"
@@ -69,4 +94,4 @@ def get_comments():
 
 
 if __name__ == '__main__':
-	get_page_033()
+	get_page_039()
