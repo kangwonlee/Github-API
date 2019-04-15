@@ -117,10 +117,12 @@ def get_auth_df():
 
 	note = 'OAuth practice' # input('Note (optional): ')
 	payload = {}
-	if note :
-			payload['note'] = note
 
-	df = req_to_df(reg_get_auth(api_auth_url, payload))
+	if note :
+		payload['note'] = note
+
+	df = req_to_df_unpack_dict(reg_get_auth(api_auth_url, payload))
+
 	return df
 
 
