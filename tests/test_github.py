@@ -27,7 +27,7 @@ def test_url_repo_comments():
     owner = 'octocat'
     repo = 'Hello-World'
 
-    parse = up.urlparse(pyapi.url_repo_comments(owner, repo))
+    parse = up.urlparse(pyapi.get_url_repo_pr_comments(owner, repo))
 
     assert 'https' == parse.scheme
     assert parse.netloc.endswith('github.com')
