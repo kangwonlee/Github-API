@@ -45,4 +45,20 @@ def test_post_repo_commit_comment(capsys):
     $ pytest -s tests
     """
     with capsys.disabled():
-        pyapi.get_page_039()
+        df = pyapi.get_auth_df()
+    
+        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.iterrows.html
+
+        for row_i, row in df.iterrows():
+            print(
+                f"[{row_i:02d}]\n"
+                f"id : {row['id']}\n"
+                f"app.name : {row['app']['name']}\n"
+                f"app.url : {row['app']['url']}\n"
+                f"created_at : {row['created_at']}\n"
+                f"note : {row['note']}\n"
+                f"note_url : {row['note_url']}\n"
+                f"scopes : {row['scopes']}\n"
+                f"updated_at : {row['updated_at']}\n"
+                f"url : {row['url']}\n"
+            )
