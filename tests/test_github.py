@@ -77,23 +77,27 @@ def test_post_repo_commit_comment(capsys):
 
         for row_i, row in df.iterrows():
 
-            if info[0] in row['app']['name']:
+            if info[0] in row['app.name']:
 
                 assert str(row['id']) in info
 
                 tested = True
 
-                print(
-                    f"[{row_i:02d}]\n"
-                    f"id : {row['id']}\n"
-                    f"app.name : {row['app']['name']}\n"
-                    f"app.url : {row['app']['url']}\n"
-                    f"created_at : {row['created_at']}\n"
-                    f"note : {row['note']}\n"
-                    f"note_url : {row['note_url']}\n"
-                    f"scopes : {row['scopes']}\n"
-                    f"updated_at : {row['updated_at']}\n"
-                    f"url : {row['url']}\n"
-                )
+                try:
+                    print(
+                        f"[{row_i:02d}]\n"
+                        f"id : {row['id']}\n"
+                        f"app.name : {row['app.name']}\n"
+                        f"app.url : {row['app.url']}\n"
+                        f"created_at : {row['created_at']}\n"
+                        f"note : {row['note']}\n"
+                        f"note_url : {row['note_url']}\n"
+                        f"scopes : {row['scopes']}\n"
+                        f"updated_at : {row['updated_at']}\n"
+                        f"url : {row['url']}\n"
+                    )
+                except KeyError as e:
+                    print(df.columns)
+                    raise e
 
         assert tested
