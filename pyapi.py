@@ -177,6 +177,8 @@ class GitHub(object):
 		POST /repos/:owner/:repo/commits/:sha/comments
 
 		https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+
+		CAUTION : This may cause abuse rate limit.
 		"""
 		url = url_repo_commit_comment(owner, repo, sha)
 		payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
