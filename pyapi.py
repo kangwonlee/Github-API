@@ -103,16 +103,25 @@ def get_page_039():
 	# http://docs.python-requests.org/en/master/user/authentication/
 	# https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
+	df = get_auth_df()
+
+	pprint.pprint(df)
+
+
+def get_auth_df():
+	"""
+	Please run this without capturing
+	"""
+
 	api_auth_url = up.urljoin(api_url, 'authorizations')
 
 	note = 'OAuth practice' # input('Note (optional): ')
 	payload = {}
 	if note :
-		payload['note'] = note
+			payload['note'] = note
 
 	df = req_to_df(reg_get_auth(api_auth_url, payload))
-
-	pprint.pprint(df)
+	return df
 
 
 def get_page_49():
