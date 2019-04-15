@@ -35,6 +35,27 @@ def test_url_repo_comments():
     assert repo in parse.path
 
 
+def test_req_to_df_unpack_dict():
+    list_nested_dict = [
+        {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str', 'd1': 'b1.d1 str'}},
+        {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str', 'd2': 'b2.d2 str'}},
+        {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str', 'd3': 'b3.d3 str'}},
+        {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str', 'd4': 'b4.d4 str'}},
+    ]
+
+    result = pyapi.unpack_list_of_nested_dict(list_nested_dict)
+
+    expected = [
+        {'a1': 'a1 str', 'b1.c1': 'b1.c1 str', 'b1.d1': 'b1.d1 str'},
+        {'a2': 'a2 str', 'b2.c2': 'b2.c2 str', 'b2.d2': 'b2.d2 str'},
+        {'a3': 'a3 str', 'b3.c3': 'b3.c3 str', 'b3.d3': 'b3.d3 str'},
+        {'a4': 'a4 str', 'b4.c4': 'b4.c4 str', 'b4.d4': 'b4.d4 str'},
+    ]
+
+    for row_result, row_expected in zip(result, expected):
+        assert row_result == row_expected
+
+
 def test_post_repo_commit_comment(capsys):
     """
     Please run this test with disabling capture
