@@ -145,7 +145,7 @@ def reg_get_auth(auth_url, payload):
     return req
 
 
-def get_repo_comments_public(owner, repo, b_verbose=False):
+def get_repo_pr_comments_public(owner, repo, b_verbose=False):
 	url = url_repo_comments(owner, repo)
 	if b_verbose:
 		print(f'get_repos_public() : url = {url}')
@@ -213,7 +213,7 @@ def payload_repo_commit_comment(body_str=False, path_str=False, position_int=Fal
 
 def main(argv):
 	if argv:
-		pprint.pprint(get_repo_comments_public(argv[0], argv[1], b_verbose=True))
+		pprint.pprint(get_repo_pr_comments_public(argv[0], argv[1], b_verbose=True))
 	else:
 		print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
 

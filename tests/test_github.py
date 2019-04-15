@@ -6,7 +6,7 @@ import pyapi
 
 
 def test_get_repo_comments_public():
-    result = pyapi.get_repo_comments_public('octocat', 'Hello-World')
+    result = pyapi.get_repo_pr_comments_public('octocat', 'Hello-World')
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.at.html#pandas.DataFrame.at
 
     id = result.at[result.index[-1], 'id']
