@@ -33,3 +33,16 @@ def test_url_repo_comments():
     assert parse.netloc.endswith('github.com')
     assert owner in parse.path
     assert repo in parse.path
+
+
+def test_post_repo_commit_comment(capsys):
+    """
+    Please run this test with disabling capture
+
+    =======
+    Example
+    =======
+    $ pytest -s tests
+    """
+    with capsys.disabled():
+        pyapi.get_page_039()
