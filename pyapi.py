@@ -17,25 +17,25 @@ api_user_url = "https://api.github.com/users"
 
 
 def get_basic(url=api_url):
-	req = requests.get(url)
-	pd = req_to_df(req)
+    req = requests.get(url)
+    pd = req_to_df(req)
 
-	return pd
+    return pd
 
 
 def req_to_df(req):
-	resp = parse_req_json(req)
+    resp = parse_req_json(req)
 
-	if isinstance(resp, dict):
-		resp = [resp]
+    if isinstance(resp, dict):
+        resp = [resp]
 
-	try:
-		pd = pandas.DataFrame(resp)
-	except BaseException as e:
-		pprint.pprint(resp)
-		raise e
+    try:
+        pd = pandas.DataFrame(resp)
+    except BaseException as e:
+        pprint.pprint(resp)
+        raise e
 
-	return pd
+    return pd
 
 
 def parse_req_json(req):
@@ -43,105 +43,112 @@ def parse_req_json(req):
 
 
 def req_to_df_unpack_dict(req):
-	"""
-	request to DataFrame unpacking nested dictionaries
+    """
+    request to DataFrame unpacking nested dictionaries
 
-	req : list of dictionaries (or nested dictionaries)
-			[
-			   {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str'}},
-			   {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str'}},
-			   {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str'}},
-			   {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str'}},
-			]
+    req : list of dictionaries (or nested dictionaries)
+            [
+               {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str'}},
+               {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str'}},
+               {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str'}},
+               {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str'}},
+            ]
 
-	"""
+    """
 
-	resp = parse_req_json(req)
+    resp = parse_req_json(req)
 
-	# response check
-	if isinstance(resp, dict):
-		raise ValueError(f'dict : {resp}')
+    # response check
+    if isinstance(resp, dict):
+        raise ValueError(f'dict : {resp}')
 
-	# unpack nested dictionaries into simpler dictionaries
-	rows = []
-	for d in resp:
-		row = {}
-		for k in d.keys():
-			keys = [k]
-			if isinstance(d[k], dict):
-				for dk in d[k]:
-					keys.append(dk)
-					# recursion possible?
-					row['.'.join(keys)] = d[k][dk]
-			else:
-				row[k] = d[k]
-		rows.append(row)
+    # unpack nested dictionaries into simpler dictionaries
+    rows = unpack_list_of_nested_dict(resp)
 
-	try:
-		pd = pandas.DataFrame(rows)
-	except BaseException as e:
-		pprint.pprint(rows)
-		raise e
+    try:
+        pd = pandas.DataFrame(rows)
+    except BaseException as e:
+        pprint.pprint(rows)
+        raise e
 
-	return pd
+    return pd
+
+
+def unpack_list_of_nested_dict(resp):
+    # unpack nested dictionaries into simpler dictionaries
+    rows = []
+    for d in resp:
+        row = {}
+        for k in d.keys():
+            keys = [k]
+            if isinstance(d[k], dict):
+                for dk in d[k]:
+                    keys.append(dk)
+                    # recursion possible?
+                    row['.'.join(keys)] = d[k][dk]
+                    keys.pop()
+            else:
+                row[k] = d[k]
+        rows.append(row)
+    return rows
 
 
 def get_page_030():
-	pd = get_basic()
-	print(pd['current_user_url'])
+    pd = get_basic()
+    print(pd['current_user_url'])
 
 
 def get_page_033():
-	repos_url = '/'.join((api_user_url, 'xrd', 'repos'))
+    repos_url = '/'.join((api_user_url, 'xrd', 'repos'))
 
-	pd = get_basic(repos_url)
+    pd = get_basic(repos_url)
 
-	pprint.pprint(pd['owner'][0]['id'])
+    pprint.pprint(pd['owner'][0]['id'])
 
 
 def get_page_039():
-	# http://docs.python-requests.org/en/master/user/authentication/
-	# https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+    # http://docs.python-requests.org/en/master/user/authentication/
+    # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
-	df = get_auth_df()
+    df = get_auth_df()
 
-	pprint.pprint(df)
+    pprint.pprint(df)
 
 
 def get_auth_df():
-	"""
-	Please run this without capturing
-	"""
+    """
+    Please run this without capturing
+    """
 
-	api_auth_url = up.urljoin(api_url, 'authorizations')
+    api_auth_url = up.urljoin(api_url, 'authorizations')
 
-	note = 'OAuth practice' # input('Note (optional): ')
-	payload = {}
+    note = 'OAuth practice' # input('Note (optional): ')
+    payload = {}
 
-	if note :
-		payload['note'] = note
+    if note :
+        payload['note'] = note
 
-	df = req_to_df_unpack_dict(reg_get_auth(api_auth_url, payload))
+    df = req_to_df_unpack_dict(reg_get_auth(api_auth_url, payload))
 
-	return df
+    return df
 
 
 def get_page_49():
-	# http://docs.python-requests.org/en/master/user/authentication/
-	# https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+    # http://docs.python-requests.org/en/master/user/authentication/
+    # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
-	api_auth_url = up.urljoin(api_url, 'rate_limit')
+    api_auth_url = up.urljoin(api_url, 'rate_limit')
 
-	note = 'rate check practice' # input('Note (optional): ')
-	payload = {}
-	if note :
-		payload['note'] = note
+    note = 'rate check practice' # input('Note (optional): ')
+    payload = {}
+    if note :
+        payload['note'] = note
 
-	df = pandas.DataFrame.from_dict(
-			parse_req_json(reg_get_auth(api_auth_url, payload))
-		)
+    df = pandas.DataFrame.from_dict(
+            parse_req_json(reg_get_auth(api_auth_url, payload))
+        )
 
-	pprint.pprint(df)
+    pprint.pprint(df)
 
 
 def reg_get_auth(auth_url, payload):
@@ -157,95 +164,95 @@ def reg_get_auth(auth_url, payload):
 
 
 def get_repo_pr_comments_public(owner, repo, b_verbose=False):
-	url = get_url_repo_pr_comments(owner, repo)
-	if b_verbose:
-		print(f'get_repos_public() : url = {url}')
-	return(get_basic(url))
+    url = get_url_repo_pr_comments(owner, repo)
+    if b_verbose:
+        print(f'get_repos_public() : url = {url}')
+    return(get_basic(url))
 
 
 def get_url_repo_pr_comments(owner, repo):
-	# https://developer.github.com/v3/pulls/comments/#list-comments-in-a-repository
+    # https://developer.github.com/v3/pulls/comments/#list-comments-in-a-repository
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'pulls', 'comments')))
 
 
 class GitHub(object):
-	"""
-	Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
-	"""
-	def __init__(self, **config_options):
-		self.__dict__.update(**config_options)
-		self.session = requests.Session()
-		if hasattr(self, 'api_token'):
-			self.session.headers['Authorization'] = f'token {self.api_token}'
+    """
+    Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
+    """
+    def __init__(self, **config_options):
+        self.__dict__.update(**config_options)
+        self.session = requests.Session()
+        if hasattr(self, 'api_token'):
+            self.session.headers['Authorization'] = f'token {self.api_token}'
 
-	def call_to_the_api(self, *args):
-		url = ''
-		return self.session.post(url)
+    def call_to_the_api(self, *args):
+        url = ''
+        return self.session.post(url)
 
-	def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
-		"""
-		Post a comment to a commit of an owner's one repostory
-		POST /repos/:owner/:repo/commits/:sha/comments
+    def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
+        """
+        Post a comment to a commit of an owner's one repostory
+        POST /repos/:owner/:repo/commits/:sha/comments
 
-		https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+        https://developer.github.com/v3/repos/comments/#create-a-commit-comment
 
-		CAUTION : This may cause abuse rate limit.
-		"""
-		url = url_repo_commit_comment(owner, repo, sha)
-		payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
+        CAUTION : This may cause abuse rate limit.
+        """
+        url = url_repo_commit_comment(owner, repo, sha)
+        payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
 
-		self.session.post(url, json=payload)
+        self.session.post(url, json=payload)
 
 
 def url_repo_commit_comment(owner, repo, sha):
-	"""
-	POST /repos/:owner/:repo/commits/:sha/comments
-	ref : https://developer.github.com/v3/repos/comments/#create-a-commit-comment
-	"""
-	return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits', sha, 'comments')))
+    """
+    POST /repos/:owner/:repo/commits/:sha/comments
+    ref : https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+    """
+    return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits', sha, 'comments')))
 
 
 def payload_repo_commit_comment(body_str=False, path_str=False, position_int=False):
-	"""
-	Prepare the payload for a comment
-	ref : https://developer.github.com/v3/repos/comments/#input
-	"""
+    """
+    Prepare the payload for a comment
+    ref : https://developer.github.com/v3/repos/comments/#input
+    """
 
-	assert body_str
+    assert body_str
 
-	result = {'body':body_str,}
+    result = {'body':body_str,}
 
-	if path_str:
-		result['path'] = str(path_str)
+    if path_str:
+        result['path'] = str(path_str)
 
-	if position_int:
-		result['position'] = int(position_int)
+    if position_int:
+        result['position'] = int(position_int)
 
-	return result
+    return result
 
 
 def main(argv):
-	if argv:
-		pprint.pprint(get_repo_pr_comments_public(argv[0], argv[1], b_verbose=True))
-	else:
-		print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
+    if argv:
+        pprint.pprint(get_repo_pr_comments_public(argv[0], argv[1], b_verbose=True))
+    else:
+        print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
 
 
 def get_comments():
-	usrname = input("Enter the username:")
-	url = api_url+usrname+"/events"
-	req = requests.get(url)
-	resp = parse_req_json(req)
+    usrname = input("Enter the username:")
+    url = api_url+usrname+"/events"
+    req = requests.get(url)
+    resp = parse_req_json(req)
 
-	pprint.pprint(resp)
+    pprint.pprint(resp)
 
-	pload = [li['payload']for li in resp]
-	payload = pload[3]
-	# print payload
+    pload = [li['payload']for li in resp]
+    payload = pload[3]
+    # print payload
 
-	for _, v in payload.items():
-		print(v['html_url'])
+    for _, v in payload.items():
+        print(v['html_url'])
 
 
 if __name__ == '__main__':
-	main(sys.argv[1:])
+    main(sys.argv[1:])
