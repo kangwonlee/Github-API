@@ -163,6 +163,13 @@ def reg_get_auth(auth_url, payload):
     return req
 
 
+def get_basic_auth():
+    return requests.auth.HTTPBasicAuth(
+        input('Github username: '),
+        getpass.getpass('Github password: ')
+    )
+
+
 def get_repo_pr_comments_public(owner, repo, b_verbose=False):
     url = get_url_repo_pr_comments(owner, repo)
     if b_verbose:
