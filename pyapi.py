@@ -201,7 +201,7 @@ class GitHub(object):
         url = url_repo_commit_comment(owner, repo, sha)
         payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
 
-        self.session.post(url, json=payload)
+        return self.session.post(url, json=payload)
 
 
 def url_repo_commit_comment(owner, repo, sha):
