@@ -115,4 +115,6 @@ def test_post_repo_commit_comment(capsys):
                 comment_str='test',
         )
 
+        assert '[401]' not in post_result, 'Not authorized'
+
         assert tested
