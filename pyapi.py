@@ -154,10 +154,7 @@ def get_page_49():
 def reg_get_auth(auth_url, payload):
     req = requests.get(
                     auth_url, 
-                    auth=requests.auth.HTTPBasicAuth(
-                                    input('Github username: '), 
-                                    getpass.getpass('Github password: ')
-                            ),
+                    auth=get_basic_auth(),
                     data=json.dumps(payload)
             )
     return req
