@@ -188,6 +188,8 @@ class GitHub(object):
         self.session = requests.Session()
         if hasattr(self, 'api_token'):
             self.session.headers['Authorization'] = f'token {self.api_token}'
+        else:
+            self.session.auth = get_basic_auth()
 
     def call_to_the_api(self, *args):
         url = ''
