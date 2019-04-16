@@ -1,3 +1,4 @@
+import ast
 import urllib.parse as up
 
 import pytest
@@ -35,6 +36,27 @@ def test_url_repo_comments():
     assert repo in parse.path
 
 
+def test_req_to_df_unpack_dict():
+    list_nested_dict = [
+        {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str', 'd1': 'b1.d1 str'}},
+        {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str', 'd2': 'b2.d2 str'}},
+        {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str', 'd3': 'b3.d3 str'}},
+        {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str', 'd4': 'b4.d4 str'}},
+    ]
+
+    result = pyapi.unpack_list_of_nested_dict(list_nested_dict)
+
+    expected = [
+        {'a1': 'a1 str', 'b1.c1': 'b1.c1 str', 'b1.d1': 'b1.d1 str'},
+        {'a2': 'a2 str', 'b2.c2': 'b2.c2 str', 'b2.d2': 'b2.d2 str'},
+        {'a3': 'a3 str', 'b3.c3': 'b3.c3 str', 'b3.d3': 'b3.d3 str'},
+        {'a4': 'a4 str', 'b4.c4': 'b4.c4 str', 'b4.d4': 'b4.d4 str'},
+    ]
+
+    for row_result, row_expected in zip(result, expected):
+        assert row_result == row_expected
+
+
 def test_post_repo_commit_comment(capsys):
     """
     Please run this test with disabling capture
@@ -45,34 +67,22 @@ def test_post_repo_commit_comment(capsys):
     $ pytest -s tests
     """
     with capsys.disabled():
-        df = pyapi.get_auth_df()
-    
-        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.iterrows.html
 
+        # test info
         with open('test_post_repo_commit_comment_info.txt', 'r') as f:
             info = [line.strip() for line in f.readlines()]
 
-        tested = False
+        post_info = ast.literal_eval(info[-1])
 
-        for row_i, row in df.iterrows():
+        github = pyapi.GitHub()
 
-            if info[0] in row['app']['name']:
+        post_result = github.post_repo_commit_comment(
+                owner=post_info['owner'],
+                repo=post_info['repo'],
+                sha=post_info['sha'],
+                comment_str='test ok?',
+        )
 
-                assert str(row['id']) in info
+        github.session.close()
 
-                tested = True
-
-                print(
-                    f"[{row_i:02d}]\n"
-                    f"id : {row['id']}\n"
-                    f"app.name : {row['app']['name']}\n"
-                    f"app.url : {row['app']['url']}\n"
-                    f"created_at : {row['created_at']}\n"
-                    f"note : {row['note']}\n"
-                    f"note_url : {row['note_url']}\n"
-                    f"scopes : {row['scopes']}\n"
-                    f"updated_at : {row['updated_at']}\n"
-                    f"url : {row['url']}\n"
-                )
-
-        assert tested
+        assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
