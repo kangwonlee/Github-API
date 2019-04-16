@@ -107,4 +107,12 @@ def test_post_repo_commit_comment(capsys):
 
         post_info = ast.literal_eval(info[-1])
 
+        github = pyapi.GitHub(api_token=token)
+        post_result = github.post_repo_commit_comment(
+                owner=post_info['owner'],
+                repo=post_info['repo'],
+                sha=post_info['sha'],
+                comment_str='test',
+        )
+
         assert tested
