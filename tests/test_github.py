@@ -101,4 +101,8 @@ def test_post_repo_commit_comment(capsys):
                     print(df.columns)
                     raise e
 
+        token_id_str = input("id: ")
+        token_id = int(token_id_str)
+        token = df.at[token_id, 'token']
+
         assert tested
