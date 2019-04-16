@@ -67,54 +67,22 @@ def test_post_repo_commit_comment(capsys):
     $ pytest -s tests
     """
     with capsys.disabled():
-        df = pyapi.get_auth_df()
-    
-        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.iterrows.html
 
+        # test info
         with open('test_post_repo_commit_comment_info.txt', 'r') as f:
             info = [line.strip() for line in f.readlines()]
 
-        tested = False
-
-        for row_i, row in df.iterrows():
-
-            if info[0] in row['app.name']:
-
-                assert str(row['id']) in info
-
-                tested = True
-
-                try:
-                    print(
-                        f"[{row_i:02d}]\n"
-                        f"id : {row['id']}\n"
-                        f"app.name : {row['app.name']}\n"
-                        f"app.url : {row['app.url']}\n"
-                        f"created_at : {row['created_at']}\n"
-                        f"note : {row['note']}\n"
-                        f"note_url : {row['note_url']}\n"
-                        f"scopes : {row['scopes']}\n"
-                        f"updated_at : {row['updated_at']}\n"
-                        f"url : {row['url']}\n"
-                    )
-                except KeyError as e:
-                    print(df.columns)
-                    raise e
-
-        token_id_str = input("id: ")
-        token_id = int(token_id_str)
-        token = df.at[token_id, 'token']
-
         post_info = ast.literal_eval(info[-1])
 
-        github = pyapi.GitHub(api_token=token)
+        github = pyapi.GitHub()
+
         post_result = github.post_repo_commit_comment(
                 owner=post_info['owner'],
                 repo=post_info['repo'],
                 sha=post_info['sha'],
-                comment_str='test',
+                comment_str='test ok?',
         )
 
-        assert '[401]' not in post_result, 'Not authorized'
+        github.session.close()
 
-        assert tested
+        assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
