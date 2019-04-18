@@ -103,3 +103,41 @@ def test_post_repo_commit_comment(get_auth):
         "position", "line", "commit_id", "user", "created_at", "updated_at",        
     ]
     assert all(key in response_dict for key in expected_keys), post_result
+
+
+def test_post_repo_issue_comment(get_auth):
+    """
+    Please run this test with disabling capture
+
+    =======
+    Example
+    =======
+    $ pytest -s tests
+    """
+
+    # test info
+    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
+        info = [line.strip() for line in f.readlines()]
+
+    post_info = ast.literal_eval(info[-2])
+
+    github = pyapi.GitHub(api_auth=get_auth)
+
+    post_result = github.post_repo_issue_comment(
+            owner=post_info['owner'],
+            repo=post_info['repo'],
+            issue_number=post_info['issue_no'],
+            comment_str='test ok?',
+    )
+
+    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+
+    response_dict = json.loads(post_result.content)
+
+    assert isinstance(response_dict, dict), type(response_dict)
+
+    expected_keys = [
+        "id", "node_id", "url", "html_url", "body", 
+        "user", "created_at", "updated_at", 
+    ]
+    assert all(key in response_dict for key in expected_keys), post_result
