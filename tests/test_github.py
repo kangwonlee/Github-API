@@ -66,7 +66,7 @@ def test_req_to_df_unpack_dict():
         assert row_result == row_expected
 
 
-def test_post_repo_commit_comment(capsys):
+def test_post_repo_commit_comment(get_auth):
     """
     Please run this test with disabling capture
 
@@ -75,23 +75,20 @@ def test_post_repo_commit_comment(capsys):
     =======
     $ pytest -s tests
     """
-    with capsys.disabled():
 
-        # test info
-        with open('test_post_repo_commit_comment_info.txt', 'r') as f:
-            info = [line.strip() for line in f.readlines()]
+    # test info
+    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
+        info = [line.strip() for line in f.readlines()]
 
-        post_info = ast.literal_eval(info[-1])
+    post_info = ast.literal_eval(info[-1])
 
-        github = pyapi.GitHub()
+    github = pyapi.GitHub(api_auth=get_auth)
 
-        post_result = github.post_repo_commit_comment(
-                owner=post_info['owner'],
-                repo=post_info['repo'],
-                sha=post_info['sha'],
-                comment_str='test ok?',
-        )
+    post_result = github.post_repo_commit_comment(
+            owner=post_info['owner'],
+            repo=post_info['repo'],
+            sha=post_info['sha'],
+            comment_str='test ok?',
+    )
 
-        github.session.close()
-
-        assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
