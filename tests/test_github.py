@@ -1,4 +1,5 @@
 import ast
+import json
 import urllib.parse as up
 
 import pytest
@@ -92,3 +93,13 @@ def test_post_repo_commit_comment(get_auth):
     )
 
     assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+
+    response_dict = json.loads(post_result.content)
+
+    assert isinstance(response_dict, dict), type(response_dict)
+
+    expected_keys = [
+        "html_url", "url", "id", "node_id", "body", "path", 
+        "position", "line", "commit_id", "user", "created_at", "updated_at",        
+    ]
+    assert all(key in response_dict for key in expected_keys), post_result
