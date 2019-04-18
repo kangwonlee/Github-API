@@ -7,11 +7,10 @@ import pytest
 import pyapi
 
 
-@pytest.fixture
-def get_auth(capsys):
+@pytest.fixture(scope='module')
+def get_auth():
 
-    with capsys.disabled():
-        auth = pyapi.get_basic_auth()
+    auth = pyapi.get_basic_auth()
 
     return auth
 
