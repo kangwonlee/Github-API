@@ -198,6 +198,17 @@ class GitHub(object):
         url = ''
         return self.session.post(url)
 
+    def url_repo_issue_comment(self, owner, repo, issue_number, comment_str):
+        """
+        For post_repo_issue_comment()
+        POST /repos/:owner/:repo/issues/:issue_number/comments
+
+        https://developer.github.com/v3/issues/comments/#create-a-comment
+
+        CAUTION : This may cause abuse rate limit.
+        """
+        return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'issues', issue_number, 'comments')))
+
     def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
         """
         Post a comment to a commit of an owner's one repostory
