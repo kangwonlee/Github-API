@@ -209,6 +209,24 @@ class GitHub(object):
         """
         return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'issues', issue_number, 'comments')))
 
+    @staticmethod
+    def payload_repo_issue_comment(body_str=False):
+        """
+        Prepare the payload for an issue comment
+
+        {
+            "body": "content here"
+        }
+
+        ref : https://developer.github.com/v3/issues/comments/#input
+        """
+
+        assert body_str
+
+        result = {'body':body_str,}
+
+        return result
+
     def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
         """
         Post a comment to a commit of an owner's one repostory
