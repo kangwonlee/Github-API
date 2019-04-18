@@ -191,6 +191,9 @@ class GitHub(object):
         else:
             self.session.auth = get_basic_auth()
 
+        if not hasattr(self, 'api_url'):
+            self.api_url = 'https://api.github.com/'
+
     def call_to_the_api(self, *args):
         url = ''
         return self.session.post(url)
