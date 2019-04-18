@@ -185,15 +185,66 @@ class GitHub(object):
     """
     def __init__(self, **config_options):
         self.__dict__.update(**config_options)
+
         self.session = requests.Session()
+
+        # authentication for self
         if hasattr(self, 'api_token'):
             self.session.headers['Authorization'] = f'token {self.api_token}'
+        elif hasattr(self, 'api_auth'):
+            self.session.auth = self.api_auth
         else:
             self.session.auth = get_basic_auth()
+
+        if not hasattr(self, 'api_url'):
+            self.api_url = 'https://api.github.com/'
+
+    def __del__(self):
+        self.session.close()
 
     def call_to_the_api(self, *args):
         url = ''
         return self.session.post(url)
+
+    def post_repo_issue_comment(self, owner, repo, issue_number, comment_str):
+        """
+        Post a comment to an issue of an owner's one repostory
+
+        CAUTION : This may cause abuse rate limit.
+        """
+        url = self.url_repo_issue_comment(owner, repo, issue_number, comment_str)
+        payload = self.payload_repo_issue_comment(body_str=comment_str)
+
+        return self.session.post(url, json=payload)
+
+    def url_repo_issue_comment(self, owner, repo, issue_number, comment_str):
+        """
+        For post_repo_issue_comment()
+        POST /repos/:owner/:repo/issues/:issue_number/comments
+
+        https://developer.github.com/v3/issues/comments/#create-a-comment
+
+        CAUTION : This may cause abuse rate limit.
+        """
+        return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'issues', issue_number, 'comments')))
+
+    @staticmethod
+    def payload_repo_issue_comment(body_str=False):
+        """
+        Prepare the payload for an issue comment
+
+        {
+            "body": "content here"
+        }
+
+        ref : https://developer.github.com/v3/issues/comments/#input
+        """
+
+        assert body_str
+
+        result = {'body':body_str,}
+
+        return result
 
     def post_repo_commit_comment(self, owner, repo, sha, comment_str, path_str=False, position_int=False):
         """
