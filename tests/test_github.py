@@ -7,8 +7,12 @@ import pyapi
 
 
 @pytest.fixture
-def get_auth():
-    return pyapi.get_basic_auth()
+def get_auth(capsys):
+
+    with capsys.disabled():
+        auth = pyapi.get_basic_auth()
+
+    return auth
 
 
 def test_get_repo_comments_public():
