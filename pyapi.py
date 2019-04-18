@@ -198,6 +198,17 @@ class GitHub(object):
         url = ''
         return self.session.post(url)
 
+    def post_repo_issue_comment(self, owner, repo, issue_number, comment_str):
+        """
+        Post a comment to an issue of an owner's one repostory
+
+        CAUTION : This may cause abuse rate limit.
+        """
+        url = self.url_repo_issue_comment(owner, repo, issue_number, comment_str)
+        payload = self.payload_repo_issue_comment(body_str=comment_str)
+
+        return self.session.post(url, json=payload)
+
     def url_repo_issue_comment(self, owner, repo, issue_number, comment_str):
         """
         For post_repo_issue_comment()
