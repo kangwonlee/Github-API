@@ -6,6 +6,11 @@ import pytest
 import pyapi
 
 
+@pytest.fixture
+def get_auth():
+    return pyapi.get_basic_auth()
+
+
 def test_get_repo_comments_public():
     result = pyapi.get_repo_pr_comments_public('octocat', 'Hello-World')
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.at.html#pandas.DataFrame.at
