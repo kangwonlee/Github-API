@@ -185,9 +185,14 @@ class GitHub(object):
     """
     def __init__(self, **config_options):
         self.__dict__.update(**config_options)
+
         self.session = requests.Session()
+
+        # authentication for self
         if hasattr(self, 'api_token'):
             self.session.headers['Authorization'] = f'token {self.api_token}'
+        elif hasattr(self, 'api_auth'):
+            self.session.auth = self.api_auth
         else:
             self.session.auth = get_basic_auth()
 
