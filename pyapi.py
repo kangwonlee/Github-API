@@ -288,6 +288,13 @@ def payload_repo_commit_comment(body_str=False, path_str=False, position_int=Fal
     return result
 
 
+def get_todo_list(json_filename):
+    with open(json_filename) as json_file:
+        todo_list = json.load(json_file)
+
+    return todo_list
+
+
 def main(argv):
     if argv:
         pprint.pprint(get_repo_pr_comments_public(argv[0], argv[1], b_verbose=True))
