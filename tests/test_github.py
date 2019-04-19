@@ -168,8 +168,9 @@ def test_get_todo_list(sample_todo_list, get_auth):
 
     # open to test
     result = pyapi.get_todo_list(temp_file_name)
-    assert result[0] == sample_todo_list[0]
-    assert result[1] == sample_todo_list[1]
+    assert len(result) == len(sample_todo_list)
+    for result_dict, expected_dict in zip(result, sample_todo_list):
+        assert result_dict == expected_dict
 
 
 def test_GitHubToDo_constructor(sample_todo_list, get_auth):
