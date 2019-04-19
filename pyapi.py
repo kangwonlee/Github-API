@@ -183,20 +183,22 @@ class GitHub(object):
     """
     Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
     """
-    def __init__(self, **config_options):
-        self.__dict__.update(**config_options)
+    def __init__(self, api_token=False, api_auth=False, api_url=False):
+        self.api_token = api_token
+        self.api_auth = api_auth
+        self.api_url = api_url
 
         self.session = requests.Session()
 
         # authentication for self
-        if hasattr(self, 'api_token'):
+        if self.api_token:
             self.session.headers['Authorization'] = f'token {self.api_token}'
-        elif hasattr(self, 'api_auth'):
+        elif self.api_auth:
             self.session.auth = self.api_auth
         else:
             self.session.auth = get_basic_auth()
 
-        if not hasattr(self, 'api_url'):
+        if self.api_url:
             self.api_url = 'https://api.github.com/'
 
     def __del__(self):
