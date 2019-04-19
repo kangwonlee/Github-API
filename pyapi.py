@@ -265,7 +265,10 @@ class GitHub(object):
 
 class GitHubToDo(GitHub):
     def __init__(self, **config_options):
-        super.__init__(**config_options)
+        # https://stackoverflow.com/questions/27472250/how-do-i-add-keyword-arguments-to-a-derived-classs-constructor-in-python
+        self.todo_list = config_options.pop('todo_list', [])
+
+        super().__init__(**config_options)
 
         assert hasattr(self, 'todo_list'), "argument todo_list missing"
 
