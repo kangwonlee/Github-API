@@ -143,14 +143,20 @@ def test_post_repo_issue_comment(get_auth):
     assert all(key in response_dict for key in expected_keys), post_result
 
 
-def test_get_todo_list():
-
+@pytest.fixture
+def sample_todo_list():
     sample_dict_0 = {'a': 'bc', 'de': 'fg'}
     sample_dict_1 = {'hi': 'jk', 'lm': 'no'}
-    sample_list = [
+
+    sample_todo_list = [
         sample_dict_0,
         sample_dict_1
     ]
+
+    return sample_todo_list
+
+
+def test_get_todo_list(sample_todo_list, get_auth):
 
     # get temp file name
     with tempfile.NamedTemporaryFile(mode='wt') as temp_name:
@@ -158,9 +164,9 @@ def test_get_todo_list():
 
     # write to the temp file
     with open(temp_file_name, mode='wt') as temp_write:
-        json.dump(sample_list, temp_write)
+        json.dump(sample_todo_list, temp_write)
 
     # open to test
     result = pyapi.get_todo_list(temp_file_name)
-    assert result[0] == sample_dict_0
-    assert result[1] == sample_dict_1
+    assert result[0] == sample_todo_list[0]
+    assert result[1] == sample_todo_list[1]
