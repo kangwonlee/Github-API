@@ -273,14 +273,20 @@ class GitHubToDo(GitHub):
         assert hasattr(self, 'todo_list'), "argument todo_list missing"
 
     def run_todo(self):
+        response_list = []
+
         for todo_dict in self.todo_list:
             # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
-                self.post_repo_issue_comment(**todo_dict)
+                response = self.post_repo_issue_comment(**todo_dict)
             elif 'sha' in todo_dict:
-                self.post_repo_commit_comment(**todo_dict)
+                response = self.post_repo_commit_comment(**todo_dict)
             else:
                 raise NotImplementedError(repr(todo_dict))
+
+            response_list.append(response)
+
+        return response_list
 
 
 def url_repo_commit_comment(owner, repo, sha):
