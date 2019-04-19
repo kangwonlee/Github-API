@@ -170,3 +170,13 @@ def test_get_todo_list(sample_todo_list, get_auth):
     result = pyapi.get_todo_list(temp_file_name)
     assert result[0] == sample_todo_list[0]
     assert result[1] == sample_todo_list[1]
+
+
+def test_GitHubToDo_constructor(sample_todo_list, get_auth):
+
+    todo_processor = pyapi.GitHubToDo(
+        todo_list=sample_todo_list,
+        api_auth=get_auth,
+    )
+
+    assert hasattr(todo_processor, 'session')
