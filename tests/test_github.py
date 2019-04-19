@@ -145,15 +145,7 @@ def test_post_repo_issue_comment(get_auth):
 
 @pytest.fixture
 def sample_todo_list():
-    sample_dict_0 = {'a': 'bc', 'de': 'fg'}
-    sample_dict_1 = {'hi': 'jk', 'lm': 'no'}
-
-    sample_todo_list = [
-        sample_dict_0,
-        sample_dict_1
-    ]
-
-    return sample_todo_list
+    return pyapi.get_todo_list('sample_todo_list.json')
 
 
 def test_get_todo_list(sample_todo_list, get_auth):
