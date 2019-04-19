@@ -261,6 +261,16 @@ class GitHub(object):
         return self.session.post(url, json=payload)
 
 
+class GitHubToDo(GitHub):
+    def __init__(self, **config_options):
+        super.__init__(**config_options)
+
+        assert hasattr(self, 'todo_list'), "argument todo_list missing"
+
+    def run_todo(self):
+        pass
+
+
 def url_repo_commit_comment(owner, repo, sha):
     """
     POST /repos/:owner/:repo/commits/:sha/comments
