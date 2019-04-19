@@ -1,5 +1,6 @@
 import ast
 import json
+import tempfile
 import urllib.parse as up
 
 import pytest
@@ -140,3 +141,53 @@ def test_post_repo_issue_comment(get_auth):
         "user", "created_at", "updated_at", 
     ]
     assert all(key in response_dict for key in expected_keys), post_result
+
+
+@pytest.fixture
+def sample_todo_list():
+    return pyapi.get_todo_list('sample_todo_list.json')
+
+
+def test_get_todo_list(sample_todo_list, get_auth):
+
+    # get temp file name
+    with tempfile.NamedTemporaryFile(mode='wt') as temp_name:
+        temp_file_name = temp_name.name
+
+    # write to the temp file
+    with open(temp_file_name, mode='wt') as temp_write:
+        json.dump(sample_todo_list, temp_write)
+
+    # open to test
+    result = pyapi.get_todo_list(temp_file_name)
+    assert len(result) == len(sample_todo_list)
+    for result_dict, expected_dict in zip(result, sample_todo_list):
+        assert result_dict == expected_dict
+
+
+def test_GitHubToDo_constructor(sample_todo_list, get_auth):
+
+    todo_processor = pyapi.GitHubToDo(
+        todo_list=sample_todo_list,
+        api_auth=get_auth,
+    )
+
+    assert hasattr(todo_processor, 'session')
+    assert hasattr(todo_processor, 'todo_list')
+
+
+def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
+
+    todo_processor = pyapi.GitHubToDo(
+        todo_list=sample_todo_list,
+        api_auth=get_auth,
+    )
+
+    response_list = todo_processor.run_todo()
+
+    assert len(response_list) == len(sample_todo_list)
+
+    for response, todo in zip(response_list, sample_todo_list):
+        # print("response.keys() =", list(response.json().keys()))
+        response_url_parse = up.urlparse(response.json()['url'])
+        assert response_url_parse.path.lower().startswith(('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()

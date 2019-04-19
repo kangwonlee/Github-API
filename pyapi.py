@@ -183,20 +183,22 @@ class GitHub(object):
     """
     Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
     """
-    def __init__(self, **config_options):
-        self.__dict__.update(**config_options)
+    def __init__(self, api_token=False, api_auth=False, api_url=False):
+        self.api_token = api_token
+        self.api_auth = api_auth
+        self.api_url = api_url
 
         self.session = requests.Session()
 
         # authentication for self
-        if hasattr(self, 'api_token'):
+        if self.api_token:
             self.session.headers['Authorization'] = f'token {self.api_token}'
-        elif hasattr(self, 'api_auth'):
+        elif self.api_auth:
             self.session.auth = self.api_auth
         else:
             self.session.auth = get_basic_auth()
 
-        if not hasattr(self, 'api_url'):
+        if self.api_url:
             self.api_url = 'https://api.github.com/'
 
     def __del__(self):
@@ -261,6 +263,32 @@ class GitHub(object):
         return self.session.post(url, json=payload)
 
 
+class GitHubToDo(GitHub):
+    def __init__(self, **config_options):
+        # https://stackoverflow.com/questions/27472250/how-do-i-add-keyword-arguments-to-a-derived-classs-constructor-in-python
+        self.todo_list = config_options.pop('todo_list', [])
+
+        super().__init__(**config_options)
+
+        assert hasattr(self, 'todo_list'), "argument todo_list missing"
+
+    def run_todo(self):
+        response_list = []
+
+        for todo_dict in self.todo_list:
+            # TODO : more data centric coding possible?
+            if 'issue_number' in todo_dict:
+                response = self.post_repo_issue_comment(**todo_dict)
+            elif 'sha' in todo_dict:
+                response = self.post_repo_commit_comment(**todo_dict)
+            else:
+                raise NotImplementedError(repr(todo_dict))
+
+            response_list.append(response)
+
+        return response_list
+
+
 def url_repo_commit_comment(owner, repo, sha):
     """
     POST /repos/:owner/:repo/commits/:sha/comments
@@ -286,6 +314,13 @@ def payload_repo_commit_comment(body_str=False, path_str=False, position_int=Fal
         result['position'] = int(position_int)
 
     return result
+
+
+def get_todo_list(json_filename):
+    with open(json_filename) as json_file:
+        todo_list = json.load(json_file)
+
+    return todo_list
 
 
 def main(argv):
