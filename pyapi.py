@@ -274,6 +274,7 @@ class GitHubToDo(GitHub):
 
     def run_todo(self):
         for todo_dict in self.todo_list:
+            # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
                 self.post_repo_issue_comment(**todo_dict)
             elif 'sha' in todo_dict:
