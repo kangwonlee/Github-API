@@ -323,9 +323,25 @@ def get_todo_list(json_filename):
     return todo_list
 
 
+def process_todo_list_json_file(*todo_list_json_filename_list):
+
+    todo_list = []
+
+    for todo_list_json_filename in todo_list_json_filename_list:
+        todo_list += get_todo_list(todo_list_json_filename)
+
+    if todo_list:
+        todo_processor = GitHubToDo(
+                todo_list=todo_list,
+                api_auth=get_basic_auth(),
+            )
+        response_list = todo_processor.run_todo()
+        print(f'len(response_list) = {len(response_list)}')
+
+
 def main(argv):
     if argv:
-        pprint.pprint(get_repo_pr_comments_public(argv[0], argv[1], b_verbose=True))
+        process_todo_list_json_file(*argv)
     else:
         print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
 

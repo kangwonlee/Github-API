@@ -189,5 +189,13 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
 
     for response, todo in zip(response_list, sample_todo_list):
         # print("response.keys() =", list(response.json().keys()))
+        response_json = response.json()
+        assert 'url' in response_json, (
+            '\n'
+            f"todo = {todo}\n"
+            f"response.text = {response.text}\n"
+            f"repr(response) = {repr(response)}"
+        )
+
         response_url_parse = up.urlparse(response.json()['url'])
         assert response_url_parse.path.lower().startswith(('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
