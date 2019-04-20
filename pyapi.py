@@ -336,7 +336,41 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
                 api_auth=get_basic_auth(),
             )
         response_list = todo_processor.run_todo()
+
         print(f'len(response_list) = {len(response_list)}')
+
+        retry_list = []
+
+        for todo_dict, response in zip(todo_list, response_list):
+            # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+            try : 
+                response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                print(f'todo_dict = {todo_dict}')
+                print(f'response = {response}')
+                print(f'response.json() = {response.json()}')
+                retry_list.append(todo_dict)
+
+        if retry_list:
+            retry_todo_processor = GitHubToDo(
+                    todo_list=retry_list,
+                    api_auth=get_basic_auth(),
+                )
+            retry_response_list = retry_todo_processor.run_todo()
+
+            retry_retry_list = []
+
+            for todo_dict, response in zip(retry_list, retry_response_list):
+                # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+                try : 
+                    response.raise_for_status()
+                except requests.exceptions.HTTPError:
+                    print(f'todo_dict = {todo_dict}')
+                    print(f'response = {response}')
+                    print(f'response.json() = {response.json()}')
+                    retry_retry_list.append(todo_dict)
+
+            print(f'len(retry_retry_list) = {len(retry_retry_list)}')
 
 
 def main(argv):
