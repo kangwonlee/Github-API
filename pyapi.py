@@ -1,6 +1,15 @@
 # https://github.com/msaisushma/Github-API
 # Dawson & Straub, Building Tools with GitHub
 # Jason McVetta, Password Privacy, Generate a Github OAuth2 Token, https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+# Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
+# List comments in a repository, Review Comments, Pull Requests, REST API v3, https://developer.github.com/v3/pulls/comments/#list-comments-in-a-repository
+# Authentication, Request, http://docs.python-requests.org/en/master/user/authentication/
+# Create a comment, Comments, Issues, REST API v3, https://developer.github.com/v3/issues/comments/#create-a-comment
+# Create a commit comment, Comments, Repositories, REST API v3, https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+# aknuds1, How do I add keyword arguments to a derived class's constructor in Python?, Stackoverflow, Oct 9 2016, https://stackoverflow.com/a/27472354
+# Input, Create a commit comment, Comments, Repositories, REST API v3, https://developer.github.com/v3/repos/comments/#input
+# Mark, How to format JSON data when writing to a file, Stackoverflow, Jul 9 '16, https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+# Authentication, Overview, REST API v3, https://developer.github.com/v3/#authentication
 
 import getpass
 import json
