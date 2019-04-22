@@ -86,7 +86,22 @@ def req_to_df_unpack_dict(req):
 
 
 def unpack_list_of_nested_dict(resp):
-    # unpack nested dictionaries into simpler dictionaries
+    """
+    Unpack nested dictionaries into simpler dictionaries
+
+    >>> unpack_list_of_nested_dict([
+        {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str', 'd1': 'b1.d1 str'}},
+        {'a2': 'a2 str', 'b2': {'c2': 'b2.c2 str', 'd2': 'b2.d2 str'}},
+        {'a3': 'a3 str', 'b3': {'c3': 'b3.c3 str', 'd3': 'b3.d3 str'}},
+        {'a4': 'a4 str', 'b4': {'c4': 'b4.c4 str', 'd4': 'b4.d4 str'}},
+    ])
+    [
+        {'a1': 'a1 str', 'b1.c1': 'b1.c1 str', 'b1.d1': 'b1.d1 str'},
+        {'a2': 'a2 str', 'b2.c2': 'b2.c2 str', 'b2.d2': 'b2.d2 str'},
+        {'a3': 'a3 str', 'b3.c3': 'b3.c3 str', 'b3.d3': 'b3.d3 str'},
+        {'a4': 'a4 str', 'b4.c4': 'b4.c4 str', 'b4.d4': 'b4.d4 str'},
+    ]
+    """
     rows = []
     for d in resp:
         row = {}
