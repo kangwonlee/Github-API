@@ -131,10 +131,10 @@ def get_auth_df():
 
     api_auth_url = up.urljoin(api_url, 'authorizations')
 
-    note = 'OAuth practice' # input('Note (optional): ')
+    note = 'OAuth practice'  # input('Note (optional): ')
     payload = {}
 
-    if note :
+    if note:
         payload['note'] = note
 
     df = req_to_df_unpack_dict(reg_get_auth(api_auth_url, payload))
@@ -148,24 +148,24 @@ def get_page_49():
 
     api_auth_url = up.urljoin(api_url, 'rate_limit')
 
-    note = 'rate check practice' # input('Note (optional): ')
+    note = 'rate check practice'  # input('Note (optional): ')
     payload = {}
-    if note :
+    if note:
         payload['note'] = note
 
     df = pandas.DataFrame.from_dict(
-            parse_req_json(reg_get_auth(api_auth_url, payload))
-        )
+        parse_req_json(reg_get_auth(api_auth_url, payload))
+    )
 
     pprint.pprint(df)
 
 
 def reg_get_auth(auth_url, payload):
     req = requests.get(
-                    auth_url, 
-                    auth=get_basic_auth(),
-                    data=json.dumps(payload)
-            )
+        auth_url,
+        auth=get_basic_auth(),
+        data=json.dumps(payload)
+    )
     return req
 
 
@@ -192,6 +192,7 @@ class GitHub(object):
     """
     Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
     """
+
     def __init__(self, api_token=False, api_auth=False, api_url=False):
         self.api_token = api_token
         self.api_auth = api_auth
@@ -223,7 +224,8 @@ class GitHub(object):
 
         CAUTION : This may cause abuse rate limit.
         """
-        url = self.url_repo_issue_comment(owner, repo, issue_number, comment_str)
+        url = self.url_repo_issue_comment(
+            owner, repo, issue_number, comment_str)
         payload = self.payload_repo_issue_comment(body_str=comment_str)
 
         return self.session.post(url, json=payload)
@@ -253,7 +255,7 @@ class GitHub(object):
 
         assert body_str
 
-        result = {'body':body_str,}
+        result = {'body': body_str, }
 
         return result
 
@@ -267,7 +269,8 @@ class GitHub(object):
         CAUTION : This may cause abuse rate limit.
         """
         url = url_repo_commit_comment(owner, repo, sha)
-        payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
+        payload = payload_repo_commit_comment(
+            body_str=comment_str, path_str=path_str, position_int=position_int)
 
         return self.session.post(url, json=payload)
 
@@ -314,7 +317,7 @@ def payload_repo_commit_comment(body_str=False, path_str=False, position_int=Fal
 
     assert body_str
 
-    result = {'body':body_str,}
+    result = {'body': body_str, }
 
     if path_str:
         result['path'] = str(path_str)
@@ -341,9 +344,9 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
     if todo_list:
         todo_processor = GitHubToDo(
-                todo_list=todo_list,
-                api_auth=get_basic_auth(),
-            )
+            todo_list=todo_list,
+            api_auth=get_basic_auth(),
+        )
         response_list = todo_processor.run_todo()
 
         print(f'len(response_list) = {len(response_list)}')
@@ -352,7 +355,7 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
         for todo_dict, response in zip(todo_list, response_list):
             # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
-            try : 
+            try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError:
                 print(f'todo_dict = {todo_dict}')
@@ -362,16 +365,16 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
         if retry_list:
             retry_todo_processor = GitHubToDo(
-                    todo_list=retry_list,
-                    api_auth=get_basic_auth(),
-                )
+                todo_list=retry_list,
+                api_auth=get_basic_auth(),
+            )
             retry_response_list = retry_todo_processor.run_todo()
 
             retry_retry_list = []
 
             for todo_dict, response in zip(retry_list, retry_response_list):
                 # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
-                try : 
+                try:
                     response.raise_for_status()
                 except requests.exceptions.HTTPError:
                     print(f'todo_dict = {todo_dict}')
