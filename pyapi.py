@@ -275,6 +275,7 @@ class GitHub(object):
         https://developer.github.com/v3/repos/comments/#create-a-commit-comment
 
         CAUTION : This may cause abuse rate limit.
+                  https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
         """
         url = url_repo_commit_comment(owner, repo, sha)
         payload = payload_repo_commit_comment(
