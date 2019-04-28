@@ -380,11 +380,11 @@ def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
 
 
 def process_todo_list_json_file(*todo_list_json_filename_list):
-    todo_list = get_unique_message_list(todo_list_json_filename_list)
+    message_list = get_unique_message_list(todo_list_json_filename_list)
 
-    if todo_list:
+    if message_list:
         todo_processor = GitHubToDo(
-            todo_list=todo_list,
+            todo_list=message_list,
             api_auth=get_basic_auth(),
         )
         response_list = todo_processor.run_todo()
@@ -393,7 +393,7 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
         retry_list = []
 
-        for todo_dict, response in zip(todo_list, response_list):
+        for todo_dict, response in zip(message_list, response_list):
             # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
             try:
                 response.raise_for_status()
