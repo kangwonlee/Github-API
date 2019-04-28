@@ -490,7 +490,8 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
         for todo_dict, response in zip(message_list, response_list):
             # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
             try:
-                response.raise_for_status()
+                if isinstance(response, requests.Response):
+                    response.raise_for_status()
             except requests.exceptions.HTTPError:
                 print(f'todo_dict = {todo_dict}')
                 print(f'response = {response}')
