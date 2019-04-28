@@ -16,6 +16,7 @@ import json
 import os
 import pprint
 import sys
+import time
 import urllib.parse as up
 
 import pandas
@@ -146,6 +147,15 @@ def get_page_49():
     # http://docs.python-requests.org/en/master/user/authentication/
     # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
+    df = pandas.DataFrame.from_dict(get_rate_limit_response())
+
+    pprint.pprint(df)
+
+
+def get_rate_limit_response():
+    # http://docs.python-requests.org/en/master/user/authentication/
+    # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+
     api_auth_url = up.urljoin(api_url, 'rate_limit')
 
     note = 'rate check practice'  # input('Note (optional): ')
@@ -153,11 +163,9 @@ def get_page_49():
     if note:
         payload['note'] = note
 
-    df = pandas.DataFrame.from_dict(
-        parse_req_json(reg_get_auth(api_auth_url, payload))
-    )
+    response = parse_req_json(reg_get_auth(api_auth_url, payload))
 
-    pprint.pprint(df)
+    return response
 
 
 def reg_get_auth(auth_url, payload):
@@ -287,7 +295,13 @@ class GitHubToDo(GitHub):
     def run_todo(self):
         response_list = []
 
+        b_wait_between = False
+
+        if 100 < len(self.todo_list):
+            b_wait_between = True
+
         for todo_dict in self.todo_list:
+            if b_wait_between: time.sleep(1.0)
             # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
                 response = self.post_repo_issue_comment(**todo_dict)
@@ -390,6 +404,7 @@ def main(argv):
         process_todo_list_json_file(*argv)
     else:
         print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
+        print(get_rate_limit_response())
 
 
 def get_comments():
