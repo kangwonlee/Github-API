@@ -148,6 +148,11 @@ def sample_todo_list():
     return pyapi.get_todo_list('sample_todo_list.json')
 
 
+@pytest.fixture
+def sample_todo_list_was_hr():
+    return pyapi.get_todo_list('sample_todo_list_was_hr.json')
+
+
 def test_get_todo_list(sample_todo_list, get_auth):
 
     # get temp file name
