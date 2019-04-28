@@ -313,7 +313,9 @@ class GitHubToDo(GitHub):
             b_wait_between = True
 
         for todo_dict in self.todo_list:
+            # to avoid abuse rate limit
             if b_wait_between: time.sleep(1.0)
+
             # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
                 response = self.post_repo_issue_comment(**todo_dict)
