@@ -384,18 +384,23 @@ class GitHubToDo(GitHub):
         if 100 < len(self.todo_list):
             b_wait_between = True
 
-        for todo_dict in self.todo_list:
-            # to avoid abuse rate limit
-            if b_wait_between:
-                time.sleep(1.0)
+        for message_dict in self.todo_list:
 
-            # TODO : more data centric coding possible?
-            if 'issue_number' in todo_dict:
-                response = self.post_repo_issue_comment(**todo_dict)
-            elif 'sha' in todo_dict:
-                response = self.post_repo_commit_comment(**todo_dict)
-            else:
-                raise NotImplementedError(repr(todo_dict))
+            response = []
+
+            if not self.was_last_message_within_hours(message_dict):
+
+                # to avoid abuse rate limit
+                if b_wait_between:
+                    time.sleep(1.0)
+
+                # TODO : more data centric coding possible?
+                if 'issue_number' in message_dict:
+                    response = self.post_repo_issue_comment(**message_dict)
+                elif 'sha' in message_dict:
+                    response = self.post_repo_commit_comment(**message_dict)
+                else:
+                    raise NotImplementedError(repr(message_dict))
 
             response_list.append(response)
 
