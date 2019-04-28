@@ -153,9 +153,9 @@ def get_page_49():
     if note:
         payload['note'] = note
 
-    df = pandas.DataFrame.from_dict(
-        parse_req_json(reg_get_auth(api_auth_url, payload))
-    )
+    response = parse_req_json(reg_get_auth(api_auth_url, payload))
+
+    df = pandas.DataFrame.from_dict(response)
 
     pprint.pprint(df)
 
