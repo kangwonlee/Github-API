@@ -397,6 +397,7 @@ def main(argv):
         process_todo_list_json_file(*argv)
     else:
         print(f"usage : python {os.path.split(__file__)[-1]} <github id>")
+        print(get_rate_limit_response())
 
 
 def get_comments():
