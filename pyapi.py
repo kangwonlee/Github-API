@@ -11,6 +11,7 @@
 # Mark, How to format JSON data when writing to a file, Stackoverflow, Jul 9 '16, https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
 # Authentication, Overview, REST API v3, https://developer.github.com/v3/#authentication
 
+import datetime
 import getpass
 import json
 import os
@@ -288,7 +289,7 @@ class GitHub(object):
         GET /repos/:owner/:repo/commits/:ref/comments
 
         https://developer.github.com/v3/repos/comments/#list-comments-for-a-single-commit
-        
+
         """
         url = url_repo_commit_comment(owner, repo, sha)
 
@@ -303,6 +304,77 @@ class GitHubToDo(GitHub):
         super().__init__(**config_options)
 
         assert hasattr(self, 'todo_list'), "argument todo_list missing"
+
+    def was_last_message_within_hours(self, new_message_dict, hr=48, b_verbose=False):
+        b_result = False
+
+        response = self.get_repo_commit_comments(
+            new_message_dict['owner'],
+            new_message_dict['repo'],
+            new_message_dict['sha'],
+        )
+
+        existing_comment_list = response.json()
+
+        for existing_comment_dict in existing_comment_list:
+
+            # List comments for a single commit
+            # https://developer.github.com/v3/repos/comments/#response-1
+
+            if b_verbose:
+                pprint.pprint(existing_comment_dict)
+            if b_verbose:
+                print(
+                    f"existing_comment_dict['body'] = {existing_comment_dict['body']}")
+                print(
+                    f"new_message_dict['comment_str'] = {new_message_dict['comment_str']}")
+
+            if existing_comment_dict['body'] == new_message_dict['comment_str']:
+                # https://docs.python.org/3/library/datetime.html#datetime.timezone.utc
+                now_datetime = datetime.datetime.now(tz=datetime.timezone.utc)
+
+                if b_verbose:
+                    print(f"now_datetime = {now_datetime}")
+
+                # naive -> aware
+                utc_time_str = existing_comment_dict['updated_at'][:-1] + '+0000'
+                # https://stackoverflow.com/posts/18795714/revisions
+                existing_time_datetime = datetime.datetime.strptime(
+                    utc_time_str, "%Y-%m-%dT%H:%M:%S%z")
+
+                if b_verbose:
+                    print(f"existing_time_datetime = {existing_time_datetime}")
+
+                # https://docs.python.org/3/library/datetime.html
+                since_message_timedelta = now_datetime - existing_time_datetime
+
+                if b_verbose:
+                    print(
+                        f"since_message_timedelta = {since_message_timedelta}")
+
+                time_since_message_sec = since_message_timedelta.total_seconds()
+
+                if b_verbose:
+                    print(f"time_since_message_sec = {time_since_message_sec}")
+
+                time_since_message_hr = time_since_message_sec / 3600.0
+
+                if b_verbose:
+                    print(f"time_since_message_hr = {time_since_message_hr}")
+
+                time_since_message_day = time_since_message_hr / 24.0
+
+                if b_verbose:
+                    print(f"time_since_message_day = {time_since_message_day}")
+
+                if 2 > time_since_message_day:
+                    b_result = True
+                    break
+
+        if b_verbose:
+            print(f"b_result = {b_result}")
+
+        return b_result
 
     def run_todo(self):
         response_list = []
