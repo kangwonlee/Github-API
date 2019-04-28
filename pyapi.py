@@ -16,6 +16,7 @@ import json
 import os
 import pprint
 import sys
+import time
 import urllib.parse as up
 
 import pandas
@@ -294,7 +295,13 @@ class GitHubToDo(GitHub):
     def run_todo(self):
         response_list = []
 
+        b_wait_between = False
+
+        if 100 < len(self.todo_list):
+            b_wait_between = True
+
         for todo_dict in self.todo_list:
+            if b_wait_between: time.sleep(1.0)
             # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
                 response = self.post_repo_issue_comment(**todo_dict)
