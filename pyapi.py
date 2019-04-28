@@ -146,6 +146,15 @@ def get_page_49():
     # http://docs.python-requests.org/en/master/user/authentication/
     # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
 
+    df = pandas.DataFrame.from_dict(get_rate_limit_response())
+
+    pprint.pprint(df)
+
+
+def get_rate_limit_response():
+    # http://docs.python-requests.org/en/master/user/authentication/
+    # https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+
     api_auth_url = up.urljoin(api_url, 'rate_limit')
 
     note = 'rate check practice'  # input('Note (optional): ')
@@ -155,9 +164,7 @@ def get_page_49():
 
     response = parse_req_json(reg_get_auth(api_auth_url, payload))
 
-    df = pandas.DataFrame.from_dict(response)
-
-    pprint.pprint(df)
+    return response
 
 
 def reg_get_auth(auth_url, payload):
