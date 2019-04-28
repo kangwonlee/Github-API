@@ -386,7 +386,8 @@ class GitHubToDo(GitHub):
 
         for todo_dict in self.todo_list:
             # to avoid abuse rate limit
-            if b_wait_between: time.sleep(1.0)
+            if b_wait_between:
+                time.sleep(1.0)
 
             # TODO : more data centric coding possible?
             if 'issue_number' in todo_dict:
@@ -454,13 +455,15 @@ def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
                 else:
                     messages_big_dict[message_dict['sha']].append(message_dict)
 
-    if b_verbose: print(f"total entries : {n_raw}")
+    if b_verbose:
+        print(f"total entries : {n_raw}")
 
     for sha in messages_big_dict:
         for message_dict in messages_big_dict[sha]:
             todo_list.append(message_dict)
 
-    if b_verbose: print(f"unique entries : {len(todo_list)}")
+    if b_verbose:
+        print(f"unique entries : {len(todo_list)}")
 
     return todo_list
 
