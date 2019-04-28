@@ -24,9 +24,9 @@ def test_get_repo_comments_public():
     url = result.at[result.index[-1], 'url']
     parse = up.urlparse(url)
     # sample : ParseResult(
-    #               scheme='https', 
-    #               netloc='api.github.com', 
-    #               path='/repos/octocat/Hello-World/pulls/comments/124412547', 
+    #               scheme='https',
+    #               netloc='api.github.com',
+    #               path='/repos/octocat/Hello-World/pulls/comments/124412547',
     #               params='', query='', fragment='')
 
     assert 'https' == parse.scheme
@@ -86,10 +86,10 @@ def test_post_repo_commit_comment(get_auth):
     github = pyapi.GitHub(api_auth=get_auth)
 
     post_result = github.post_repo_commit_comment(
-            owner=post_info['owner'],
-            repo=post_info['repo'],
-            sha=post_info['sha'],
-            comment_str='test ok?',
+        owner=post_info['owner'],
+        repo=post_info['repo'],
+        sha=post_info['sha'],
+        comment_str='test ok?',
     )
 
     assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
@@ -99,8 +99,8 @@ def test_post_repo_commit_comment(get_auth):
     assert isinstance(response_dict, dict), type(response_dict)
 
     expected_keys = [
-        "html_url", "url", "id", "node_id", "body", "path", 
-        "position", "line", "commit_id", "user", "created_at", "updated_at",        
+        "html_url", "url", "id", "node_id", "body", "path",
+        "position", "line", "commit_id", "user", "created_at", "updated_at",
     ]
     assert all(key in response_dict for key in expected_keys), post_result
 
@@ -124,10 +124,10 @@ def test_post_repo_issue_comment(get_auth):
     github = pyapi.GitHub(api_auth=get_auth)
 
     post_result = github.post_repo_issue_comment(
-            owner=post_info['owner'],
-            repo=post_info['repo'],
-            issue_number=post_info['issue_no'],
-            comment_str='test ok?',
+        owner=post_info['owner'],
+        repo=post_info['repo'],
+        issue_number=post_info['issue_no'],
+        comment_str='test ok?',
     )
 
     assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
@@ -137,8 +137,8 @@ def test_post_repo_issue_comment(get_auth):
     assert isinstance(response_dict, dict), type(response_dict)
 
     expected_keys = [
-        "id", "node_id", "url", "html_url", "body", 
-        "user", "created_at", "updated_at", 
+        "id", "node_id", "url", "html_url", "body",
+        "user", "created_at", "updated_at",
     ]
     assert all(key in response_dict for key in expected_keys), post_result
 
@@ -198,4 +198,5 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
         )
 
         response_url_parse = up.urlparse(response.json()['url'])
-        assert response_url_parse.path.lower().startswith(('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
+        assert response_url_parse.path.lower().startswith(
+            ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()

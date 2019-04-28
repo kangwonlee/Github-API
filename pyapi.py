@@ -1,6 +1,15 @@
 # https://github.com/msaisushma/Github-API
 # Dawson & Straub, Building Tools with GitHub
 # Jason McVetta, Password Privacy, Generate a Github OAuth2 Token, https://advanced-python.readthedocs.io/en/latest/rest/authtoken.html#password-privacy
+# Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
+# List comments in a repository, Review Comments, Pull Requests, REST API v3, https://developer.github.com/v3/pulls/comments/#list-comments-in-a-repository
+# Authentication, Request, http://docs.python-requests.org/en/master/user/authentication/
+# Create a comment, Comments, Issues, REST API v3, https://developer.github.com/v3/issues/comments/#create-a-comment
+# Create a commit comment, Comments, Repositories, REST API v3, https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+# aknuds1, How do I add keyword arguments to a derived class's constructor in Python?, Stackoverflow, Oct 9 2016, https://stackoverflow.com/a/27472354
+# Input, Create a commit comment, Comments, Repositories, REST API v3, https://developer.github.com/v3/repos/comments/#input
+# Mark, How to format JSON data when writing to a file, Stackoverflow, Jul 9 '16, https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+# Authentication, Overview, REST API v3, https://developer.github.com/v3/#authentication
 
 import getpass
 import json
@@ -122,10 +131,10 @@ def get_auth_df():
 
     api_auth_url = up.urljoin(api_url, 'authorizations')
 
-    note = 'OAuth practice' # input('Note (optional): ')
+    note = 'OAuth practice'  # input('Note (optional): ')
     payload = {}
 
-    if note :
+    if note:
         payload['note'] = note
 
     df = req_to_df_unpack_dict(reg_get_auth(api_auth_url, payload))
@@ -139,24 +148,24 @@ def get_page_49():
 
     api_auth_url = up.urljoin(api_url, 'rate_limit')
 
-    note = 'rate check practice' # input('Note (optional): ')
+    note = 'rate check practice'  # input('Note (optional): ')
     payload = {}
-    if note :
+    if note:
         payload['note'] = note
 
     df = pandas.DataFrame.from_dict(
-            parse_req_json(reg_get_auth(api_auth_url, payload))
-        )
+        parse_req_json(reg_get_auth(api_auth_url, payload))
+    )
 
     pprint.pprint(df)
 
 
 def reg_get_auth(auth_url, payload):
     req = requests.get(
-                    auth_url, 
-                    auth=get_basic_auth(),
-                    data=json.dumps(payload)
-            )
+        auth_url,
+        auth=get_basic_auth(),
+        data=json.dumps(payload)
+    )
     return req
 
 
@@ -183,6 +192,7 @@ class GitHub(object):
     """
     Ian Stapleton Cordasco, softvar, how to use github api token in python for requesting, 2013 July 13, https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
     """
+
     def __init__(self, api_token=False, api_auth=False, api_url=False):
         self.api_token = api_token
         self.api_auth = api_auth
@@ -214,7 +224,8 @@ class GitHub(object):
 
         CAUTION : This may cause abuse rate limit.
         """
-        url = self.url_repo_issue_comment(owner, repo, issue_number, comment_str)
+        url = self.url_repo_issue_comment(
+            owner, repo, issue_number, comment_str)
         payload = self.payload_repo_issue_comment(body_str=comment_str)
 
         return self.session.post(url, json=payload)
@@ -244,7 +255,7 @@ class GitHub(object):
 
         assert body_str
 
-        result = {'body':body_str,}
+        result = {'body': body_str, }
 
         return result
 
@@ -258,7 +269,8 @@ class GitHub(object):
         CAUTION : This may cause abuse rate limit.
         """
         url = url_repo_commit_comment(owner, repo, sha)
-        payload = payload_repo_commit_comment(body_str=comment_str, path_str=path_str, position_int=position_int)
+        payload = payload_repo_commit_comment(
+            body_str=comment_str, path_str=path_str, position_int=position_int)
 
         return self.session.post(url, json=payload)
 
@@ -305,7 +317,7 @@ def payload_repo_commit_comment(body_str=False, path_str=False, position_int=Fal
 
     assert body_str
 
-    result = {'body':body_str,}
+    result = {'body': body_str, }
 
     if path_str:
         result['path'] = str(path_str)
@@ -332,11 +344,45 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
     if todo_list:
         todo_processor = GitHubToDo(
-                todo_list=todo_list,
+            todo_list=todo_list,
+            api_auth=get_basic_auth(),
+        )
+        response_list = todo_processor.run_todo()
+
+        print(f'len(response_list) = {len(response_list)}')
+
+        retry_list = []
+
+        for todo_dict, response in zip(todo_list, response_list):
+            # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                print(f'todo_dict = {todo_dict}')
+                print(f'response = {response}')
+                print(f'response.json() = {response.json()}')
+                retry_list.append(todo_dict)
+
+        if retry_list:
+            retry_todo_processor = GitHubToDo(
+                todo_list=retry_list,
                 api_auth=get_basic_auth(),
             )
-        response_list = todo_processor.run_todo()
-        print(f'len(response_list) = {len(response_list)}')
+            retry_response_list = retry_todo_processor.run_todo()
+
+            retry_retry_list = []
+
+            for todo_dict, response in zip(retry_list, retry_response_list):
+                # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
+                try:
+                    response.raise_for_status()
+                except requests.exceptions.HTTPError:
+                    print(f'todo_dict = {todo_dict}')
+                    print(f'response = {response}')
+                    print(f'response.json() = {response.json()}')
+                    retry_retry_list.append(todo_dict)
+
+            print(f'len(retry_retry_list) = {len(retry_retry_list)}')
 
 
 def main(argv):
