@@ -349,12 +349,38 @@ def get_todo_list(json_filename):
     return todo_list
 
 
-def process_todo_list_json_file(*todo_list_json_filename_list):
-
+def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
     todo_list = []
 
+    messages_big_dict = {}
+
+    n_raw = 0
+    # unique messages only
     for todo_list_json_filename in todo_list_json_filename_list:
-        todo_list += get_todo_list(todo_list_json_filename)
+        file_message_list = get_todo_list(todo_list_json_filename)
+        for message_dict in file_message_list:
+            n_raw += 1
+            if message_dict['sha'] not in messages_big_dict:
+                messages_big_dict[message_dict['sha']] = [message_dict]
+            else:
+                if any(map(lambda d: d['comment_str'] == message_dict['comment_str'], messages_big_dict[message_dict['sha']])):
+                    pass
+                else:
+                    messages_big_dict[message_dict['sha']].append(message_dict)
+
+    if b_verbose: print(f"total entries : {n_raw}")
+
+    for sha in messages_big_dict:
+        for message_dict in messages_big_dict[sha]:
+            todo_list.append(message_dict)
+
+    if b_verbose: print(f"unique entries : {len(todo_list)}")
+
+    return todo_list
+
+
+def process_todo_list_json_file(*todo_list_json_filename_list):
+    todo_list = get_unique_message_list(todo_list_json_filename_list)
 
     if todo_list:
         todo_processor = GitHubToDo(
