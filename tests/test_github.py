@@ -205,3 +205,31 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
         response_url_parse = up.urlparse(response.json()['url'])
         assert response_url_parse.path.lower().startswith(
             ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
+
+
+def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
+
+    todo_processor = pyapi.GitHubToDo(
+        todo_list=sample_todo_list_was_hr,
+        api_auth=get_auth,
+    )
+
+    owner = sample_todo_list_was_hr[0]['owner']
+    repo = sample_todo_list_was_hr[0]['repo']
+    sha = sample_todo_list_was_hr[0]['sha']
+    body = sample_todo_list_was_hr[0]['comment_str']
+
+    # post a message before test
+    todo_processor.post_repo_commit_comment(owner, repo, sha, body)
+
+    # function under test
+    result = todo_processor.was_last_message_within_hours(
+        sample_todo_list_was_hr[0],
+        owner,
+        repo,
+        sha,
+        b_verbose=False,
+        hr=0.5,
+    )
+
+    assert result
