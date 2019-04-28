@@ -4,6 +4,7 @@ import tempfile
 import urllib.parse as up
 
 import pytest
+import requests
 
 import pyapi
 
@@ -148,6 +149,11 @@ def sample_todo_list():
     return pyapi.get_todo_list('sample_todo_list.json')
 
 
+@pytest.fixture
+def sample_todo_list_was_hr():
+    return pyapi.get_todo_list('sample_todo_list_was_hr.json')
+
+
 def test_get_todo_list(sample_todo_list, get_auth):
 
     # get temp file name
@@ -189,14 +195,40 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
 
     for response, todo in zip(response_list, sample_todo_list):
         # print("response.keys() =", list(response.json().keys()))
-        response_json = response.json()
-        assert 'url' in response_json, (
-            '\n'
-            f"todo = {todo}\n"
-            f"response.text = {response.text}\n"
-            f"repr(response) = {repr(response)}"
-        )
+        if isinstance(response, requests.Response):
+            response_json = response.json()
+            assert 'url' in response_json, (
+                '\n'
+                f"todo = {todo}\n"
+                f"response.text = {response.text}\n"
+                f"repr(response) = {repr(response)}"
+            )
 
-        response_url_parse = up.urlparse(response.json()['url'])
-        assert response_url_parse.path.lower().startswith(
-            ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
+            response_url_parse = up.urlparse(response.json()['url'])
+            assert response_url_parse.path.lower().startswith(
+                ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
+
+
+def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
+
+    todo_processor = pyapi.GitHubToDo(
+        todo_list=sample_todo_list_was_hr,
+        api_auth=get_auth,
+    )
+
+    owner = sample_todo_list_was_hr[0]['owner']
+    repo = sample_todo_list_was_hr[0]['repo']
+    sha = sample_todo_list_was_hr[0]['sha']
+    body = sample_todo_list_was_hr[0]['comment_str']
+
+    # post a message before test
+    todo_processor.post_repo_commit_comment(owner, repo, sha, body)
+
+    # function under test
+    result = todo_processor.was_last_message_within_hours(
+        sample_todo_list_was_hr[0],
+        b_verbose=False,
+        hr=0.5,
+    )
+
+    assert result
