@@ -349,16 +349,42 @@ def get_todo_list(json_filename):
     return todo_list
 
 
-def process_todo_list_json_file(*todo_list_json_filename_list):
-
+def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
     todo_list = []
 
-    for todo_list_json_filename in todo_list_json_filename_list:
-        todo_list += get_todo_list(todo_list_json_filename)
+    messages_big_dict = {}
 
-    if todo_list:
+    n_raw = 0
+    # unique messages only
+    for todo_list_json_filename in todo_list_json_filename_list:
+        file_message_list = get_todo_list(todo_list_json_filename)
+        for message_dict in file_message_list:
+            n_raw += 1
+            if message_dict['sha'] not in messages_big_dict:
+                messages_big_dict[message_dict['sha']] = [message_dict]
+            else:
+                if any(map(lambda d: d['comment_str'] == message_dict['comment_str'], messages_big_dict[message_dict['sha']])):
+                    pass
+                else:
+                    messages_big_dict[message_dict['sha']].append(message_dict)
+
+    if b_verbose: print(f"total entries : {n_raw}")
+
+    for sha in messages_big_dict:
+        for message_dict in messages_big_dict[sha]:
+            todo_list.append(message_dict)
+
+    if b_verbose: print(f"unique entries : {len(todo_list)}")
+
+    return todo_list
+
+
+def process_todo_list_json_file(*todo_list_json_filename_list):
+    message_list = get_unique_message_list(todo_list_json_filename_list)
+
+    if message_list:
         todo_processor = GitHubToDo(
-            todo_list=todo_list,
+            todo_list=message_list,
             api_auth=get_basic_auth(),
         )
         response_list = todo_processor.run_todo()
@@ -367,7 +393,7 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
 
         retry_list = []
 
-        for todo_dict, response in zip(todo_list, response_list):
+        for todo_dict, response in zip(message_list, response_list):
             # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
             try:
                 response.raise_for_status()
