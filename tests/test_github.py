@@ -4,6 +4,7 @@ import tempfile
 import urllib.parse as up
 
 import pytest
+import requests
 
 import pyapi
 
@@ -194,17 +195,18 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
 
     for response, todo in zip(response_list, sample_todo_list):
         # print("response.keys() =", list(response.json().keys()))
-        response_json = response.json()
-        assert 'url' in response_json, (
-            '\n'
-            f"todo = {todo}\n"
-            f"response.text = {response.text}\n"
-            f"repr(response) = {repr(response)}"
-        )
+        if isinstance(response, requests.Response):
+            response_json = response.json()
+            assert 'url' in response_json, (
+                '\n'
+                f"todo = {todo}\n"
+                f"response.text = {response.text}\n"
+                f"repr(response) = {repr(response)}"
+            )
 
-        response_url_parse = up.urlparse(response.json()['url'])
-        assert response_url_parse.path.lower().startswith(
-            ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
+            response_url_parse = up.urlparse(response.json()['url'])
+            assert response_url_parse.path.lower().startswith(
+                ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
 
 
 def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
@@ -225,9 +227,6 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     # function under test
     result = todo_processor.was_last_message_within_hours(
         sample_todo_list_was_hr[0],
-        owner,
-        repo,
-        sha,
         b_verbose=False,
         hr=0.5,
     )
