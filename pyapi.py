@@ -283,6 +283,17 @@ class GitHub(object):
 
         return self.session.post(url, json=payload)
 
+    def get_repo_commit_comments(self, owner, repo, sha):
+        """
+        GET /repos/:owner/:repo/commits/:ref/comments
+
+        https://developer.github.com/v3/repos/comments/#list-comments-for-a-single-commit
+        
+        """
+        url = url_repo_commit_comment(owner, repo, sha)
+
+        return self.session.get(url)
+
 
 class GitHubToDo(GitHub):
     def __init__(self, **config_options):
