@@ -310,6 +310,17 @@ class GitHub(object):
 
         return self.session.get(url)
 
+    def get_repo_comments(self, owner, repo):
+        """
+        GET /repos/:owner/:repo/comments
+
+        https://developer.github.com/v3/repos/comments/#list-commit-comments-for-a-repository
+
+        """
+        url = url_repo_comments(owner, repo)
+
+        return self.session.get(url)
+
     def delete_repo_commit_comment(self, owner, repo, comment_id):
         """
         DELETE /repos/:owner/:repo/comments/:comment_id
