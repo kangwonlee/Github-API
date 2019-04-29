@@ -19,6 +19,15 @@ def get_auth():
     del auth
 
 
+@pytest.fixture(scope='module')
+def info():
+    # test info
+    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
+        info = [line.strip() for line in f.readlines()]
+
+    return info
+
+
 def test_get_repo_comments_public():
     result = pyapi.get_repo_pr_comments_public('octocat', 'Hello-World')
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.at.html#pandas.DataFrame.at
