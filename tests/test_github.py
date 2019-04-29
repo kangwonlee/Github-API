@@ -1,4 +1,5 @@
 import ast
+import datetime
 import json
 import tempfile
 import urllib.parse as up
@@ -94,6 +95,18 @@ def test_req_to_df_unpack_dict():
 
     for row_result, row_expected in zip(result, expected):
         assert row_result == row_expected
+
+
+def test_get_comment_utc_time():
+    utc_time_str = '2011-04-14T16:00:49Z'
+
+    # function under test
+    result = pyapi.get_comment_utc_time(utc_time_str)
+
+    expected = datetime.datetime(
+        2011, 4, 14, hour=16, minute=0, second=49, tzinfo=datetime.timezone.utc)
+
+    assert expected == result
 
 
 def test_post_repo_commit_comment(get_auth, info):
