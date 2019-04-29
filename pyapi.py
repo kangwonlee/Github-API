@@ -459,6 +459,13 @@ class GitHubToDo(GitHub):
         return response_list
 
 
+def get_comment_utc_time(github_comment_time_str):
+    utc_time_str = github_comment_time_str[:-1] + '+0000'
+    # https://stackoverflow.com/posts/18795714/revisions
+    return datetime.datetime.strptime(
+        utc_time_str, "%Y-%m-%dT%H:%M:%S%z")
+
+
 def url_repo_comments(owner, repo):
     """
     POST /repos/:owner/:repo/commits/:sha/comments
