@@ -310,6 +310,16 @@ class GitHub(object):
 
         return self.session.get(url)
 
+    def delete_repo_commit_comment(self, owner, repo, comment_id):
+        """
+        DELETE /repos/:owner/:repo/comments/:comment_id
+
+        https://developer.github.com/v3/repos/comments/#delete-a-commit-comment
+        """
+        url = get_url_delete_repo_commit_comment(owner, repo, comment_id)
+
+        return self.session.delete(url)
+
 
 class GitHubToDo(GitHub):
     def __init__(self, todo_list, api_token=False, api_auth=False, api_url=False):
