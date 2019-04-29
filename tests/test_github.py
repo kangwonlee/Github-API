@@ -110,11 +110,13 @@ def test_post_repo_commit_comment(get_auth, info):
 
     github = pyapi.GitHub(api_auth=get_auth)
 
+    comment_str = 'test ok?'
+
     post_result = github.post_repo_commit_comment(
         owner=post_info['owner'],
         repo=post_info['repo'],
         sha=post_info['sha'],
-        comment_str='test ok?',
+        comment_str=comment_str,
     )
 
     assert post_result.ok, f'Not authorized {post_result}'
@@ -137,6 +139,10 @@ def test_post_repo_commit_comment(get_auth, info):
     )
 
     assert delete_result.ok, f'Not deleted: {delete_result}'
+
+    # cleanup
+    post_info['comment_str'] = comment_str
+    cleanup_repo_commit_comments(github, post_info)
 
 
 def test_post_repo_issue_comment(get_auth, info):
