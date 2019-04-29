@@ -237,6 +237,30 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
             assert response_url_parse.path.lower().startswith(
                 ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
 
+    # cleanup
+    # sample loop
+    for sample_todo_dict in sample_todo_list:
+        get_message_response = todo_processor.get_repo_commit_comments(
+            sample_todo_dict['owner'],
+            sample_todo_dict['repo'],
+            sample_todo_dict['sha'],
+        )
+
+        message_list = get_message_response.json()
+
+        # message loop
+        for message_dict in message_list:
+            assert isinstance(message_dict, dict), type(message_dict)
+
+            if message_dict['body'] == sample_todo_dict['comment_str']:
+                delete_response = todo_processor.delete_repo_commit_comment(
+                    owner=sample_todo_dict['owner'],
+                    repo=sample_todo_dict['repo'],
+                    comment_id=message_dict['id']
+                )
+
+                assert delete_response.ok
+
 
 def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
 
