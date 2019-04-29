@@ -47,6 +47,23 @@ def test_url_repo_comments():
     assert repo in parse.path
 
 
+def test_get_url_delete_repo_commit_comment():
+    owner = 'octocat'
+    repo = 'Hello-World'
+    comment_id = '6dcb09b5b57875f334f61aebed695e2e4193db5e'
+
+    # function under test
+    url = pyapi.get_url_delete_repo_commit_comment(owner, repo, comment_id)
+
+    parse = up.urlparse(url)
+
+    assert 'https' == parse.scheme
+    assert parse.netloc.endswith('github.com')
+    assert owner in parse.path
+    assert repo in parse.path
+    assert comment_id in parse.path
+
+
 def test_req_to_df_unpack_dict():
     list_nested_dict = [
         {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str', 'd1': 'b1.d1 str'}},
