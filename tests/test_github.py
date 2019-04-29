@@ -251,7 +251,7 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     body = sample_todo_list_was_hr[0]['comment_str']
 
     # post a message before test
-    todo_processor.post_repo_commit_comment(owner, repo, sha, body)
+    post_response = todo_processor.post_repo_commit_comment(owner, repo, sha, body)
 
     # function under test
     result = todo_processor.was_last_message_within_hours(
@@ -261,3 +261,12 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     )
 
     assert result
+
+    post_response_dict = post_response.json()
+    delete_response = todo_processor.delete_repo_commit_comment(
+        owner=owner,
+        repo=repo,
+        comment_id=post_response_dict['id'],
+    )
+
+    assert delete_response.ok, delete_response
