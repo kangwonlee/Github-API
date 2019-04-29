@@ -139,7 +139,7 @@ def test_post_repo_commit_comment(get_auth, info):
     assert delete_result.ok, f'Not deleted: {delete_result}'
 
 
-def test_post_repo_issue_comment(get_auth):
+def test_post_repo_issue_comment(get_auth, info):
     """
     Please run this test with disabling capture
 
@@ -148,10 +148,6 @@ def test_post_repo_issue_comment(get_auth):
     =======
     $ pytest -s tests
     """
-
-    # test info
-    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
-        info = [line.strip() for line in f.readlines()]
 
     post_info = ast.literal_eval(info[-2])
 
