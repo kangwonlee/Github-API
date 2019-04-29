@@ -430,6 +430,14 @@ class GitHubToDo(GitHub):
         return response_list
 
 
+def url_repo_comments(owner, repo):
+    """
+    POST /repos/:owner/:repo/commits/:sha/comments
+    ref : https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+    """
+    return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits')))
+
+
 def url_repo_commit_comment(owner, repo, sha):
     """
     POST /repos/:owner/:repo/commits/:sha/comments
