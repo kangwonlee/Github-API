@@ -331,7 +331,7 @@ class GitHub(object):
 
         return self.session.delete(url)
 
-    def consolidate_repo_messages(self, owner, repo):
+    def consolidate_repo_messages(self, owner, repo, hr=1):
         """
         Consolidate multiple commit comments of a repository
         """
