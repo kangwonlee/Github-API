@@ -428,6 +428,14 @@ def url_repo_commit_comment(owner, repo, sha):
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits', sha, 'comments')))
 
 
+def get_url_delete_repo_commit_comment(owner, repo, comment_id):
+    """
+    DELETE /repos/:owner/:repo/comments/:comment_id
+    ref : https://developer.github.com/v3/repos/comments/#delete-a-commit-comment
+    """
+    return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'comments', comment_id)))
+
+
 def payload_repo_commit_comment(body_str=False, path_str=False, position_int=False):
     """
     Prepare the payload for a comment
