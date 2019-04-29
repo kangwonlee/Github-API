@@ -96,7 +96,7 @@ def test_req_to_df_unpack_dict():
         assert row_result == row_expected
 
 
-def test_post_repo_commit_comment(get_auth):
+def test_post_repo_commit_comment(get_auth, info):
     """
     Please run this test with disabling capture
 
@@ -105,10 +105,6 @@ def test_post_repo_commit_comment(get_auth):
     =======
     $ pytest -s tests
     """
-
-    # test info
-    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
-        info = [line.strip() for line in f.readlines()]
 
     post_info = ast.literal_eval(info[-1])
 
