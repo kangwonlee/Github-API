@@ -346,6 +346,9 @@ class GitHub(object):
         d = {}
 
         for repo_message_dict in repo_message_list:
+            repo_message_dict['created_at'] = get_comment_utc_time(repo_message_dict['created_at'])
+            repo_message_dict['updated_at'] = get_comment_utc_time(repo_message_dict['updated_at'])
+
             d['commit_id'] = d.get(
                 repo_message_dict['commit_id'], []).append(repo_message_dict)
 
