@@ -312,13 +312,11 @@ class GitHub(object):
 
 
 class GitHubToDo(GitHub):
-    def __init__(self, **config_options):
-        # https://stackoverflow.com/questions/27472250/how-do-i-add-keyword-arguments-to-a-derived-classs-constructor-in-python
-        self.todo_list = config_options.pop('todo_list', [])
+    def __init__(self, todo_list, api_token=False, api_auth=False, api_url=False):
 
-        super().__init__(**config_options)
+        super().__init__(api_token=api_token, api_auth=api_auth, api_url=api_url)
 
-        assert hasattr(self, 'todo_list'), "argument todo_list missing"
+        self.todo_list = todo_list
 
     def was_last_message_within_hours(self, new_message_dict, hr=48, b_verbose=False):
         b_result = False
