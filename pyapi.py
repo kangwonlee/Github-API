@@ -310,6 +310,16 @@ class GitHub(object):
 
         return self.session.get(url)
 
+    def delete_repo_commit_comment(self, owner, repo, comment_id):
+        """
+        DELETE /repos/:owner/:repo/comments/:comment_id
+
+        https://developer.github.com/v3/repos/comments/#delete-a-commit-comment
+        """
+        url = get_url_delete_repo_commit_comment(owner, repo, comment_id)
+
+        return self.session.delete(url)
+
 
 class GitHubToDo(GitHub):
     def __init__(self, todo_list, api_token=False, api_auth=False, api_url=False):
@@ -426,6 +436,14 @@ def url_repo_commit_comment(owner, repo, sha):
     ref : https://developer.github.com/v3/repos/comments/#create-a-commit-comment
     """
     return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'commits', sha, 'comments')))
+
+
+def get_url_delete_repo_commit_comment(owner, repo, comment_id):
+    """
+    DELETE /repos/:owner/:repo/comments/:comment_id
+    ref : https://developer.github.com/v3/repos/comments/#delete-a-commit-comment
+    """
+    return up.urljoin(api_url, '/'.join(('repos', owner, repo, 'comments', str(comment_id))))
 
 
 def payload_repo_commit_comment(body_str=False, path_str=False, position_int=False):

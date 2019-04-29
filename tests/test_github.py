@@ -14,7 +14,18 @@ def get_auth():
 
     auth = pyapi.get_basic_auth()
 
-    return auth
+    yield auth
+
+    del auth
+
+
+@pytest.fixture(scope='module')
+def info():
+    # test info
+    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
+        info = [line.strip() for line in f.readlines()]
+
+    return info
 
 
 def test_get_repo_comments_public():
@@ -47,6 +58,23 @@ def test_url_repo_comments():
     assert repo in parse.path
 
 
+def test_get_url_delete_repo_commit_comment():
+    owner = 'octocat'
+    repo = 'Hello-World'
+    comment_id = '6dcb09b5b57875f334f61aebed695e2e4193db5e'
+
+    # function under test
+    url = pyapi.get_url_delete_repo_commit_comment(owner, repo, comment_id)
+
+    parse = up.urlparse(url)
+
+    assert 'https' == parse.scheme
+    assert parse.netloc.endswith('github.com')
+    assert owner in parse.path
+    assert repo in parse.path
+    assert comment_id in parse.path
+
+
 def test_req_to_df_unpack_dict():
     list_nested_dict = [
         {'a1': 'a1 str', 'b1': {'c1': 'b1.c1 str', 'd1': 'b1.d1 str'}},
@@ -68,7 +96,7 @@ def test_req_to_df_unpack_dict():
         assert row_result == row_expected
 
 
-def test_post_repo_commit_comment(get_auth):
+def test_post_repo_commit_comment(get_auth, info):
     """
     Please run this test with disabling capture
 
@@ -78,24 +106,22 @@ def test_post_repo_commit_comment(get_auth):
     $ pytest -s tests
     """
 
-    # test info
-    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
-        info = [line.strip() for line in f.readlines()]
-
     post_info = ast.literal_eval(info[-1])
 
     github = pyapi.GitHub(api_auth=get_auth)
+
+    comment_str = 'test ok?'
 
     post_result = github.post_repo_commit_comment(
         owner=post_info['owner'],
         repo=post_info['repo'],
         sha=post_info['sha'],
-        comment_str='test ok?',
+        comment_str=comment_str,
     )
 
-    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+    assert post_result.ok, f'Not authorized {post_result}'
 
-    response_dict = json.loads(post_result.content)
+    response_dict = post_result.json()
 
     assert isinstance(response_dict, dict), type(response_dict)
 
@@ -105,8 +131,21 @@ def test_post_repo_commit_comment(get_auth):
     ]
     assert all(key in response_dict for key in expected_keys), post_result
 
+    # delete posted message
+    delete_result = github.delete_repo_commit_comment(
+        owner=post_info['owner'],
+        repo=post_info['repo'],
+        comment_id=response_dict['id'],
+    )
 
-def test_post_repo_issue_comment(get_auth):
+    assert delete_result.ok, f'Not deleted: {delete_result}'
+
+    # cleanup
+    post_info['comment_str'] = comment_str
+    cleanup_repo_commit_comments(github, post_info)
+
+
+def test_post_repo_issue_comment(get_auth, info):
     """
     Please run this test with disabling capture
 
@@ -115,10 +154,6 @@ def test_post_repo_issue_comment(get_auth):
     =======
     $ pytest -s tests
     """
-
-    # test info
-    with open('test_post_repo_commit_comment_info.txt', 'r') as f:
-        info = [line.strip() for line in f.readlines()]
 
     post_info = ast.literal_eval(info[-2])
 
@@ -131,9 +166,9 @@ def test_post_repo_issue_comment(get_auth):
         comment_str='test ok?',
     )
 
-    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+    assert post_result.ok, f'Not authorized {post_result}'
 
-    response_dict = json.loads(post_result.content)
+    response_dict = post_result.json()
 
     assert isinstance(response_dict, dict), type(response_dict)
 
@@ -208,6 +243,34 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
             assert response_url_parse.path.lower().startswith(
                 ('/'.join(('', 'repos', todo['owner'], todo['repo'])).lower())), response.json()
 
+    # cleanup
+    # sample loop
+    for sample_todo_dict in sample_todo_list:
+        cleanup_repo_commit_comments(todo_processor, sample_todo_dict)
+
+
+def cleanup_repo_commit_comments(github, sample_send_message_dict):
+    get_message_response = github.get_repo_commit_comments(
+        sample_send_message_dict['owner'],
+        sample_send_message_dict['repo'],
+        sample_send_message_dict['sha'],
+    )
+
+    get_message_list = get_message_response.json()
+
+    # message loop
+    for get_message_dict in get_message_list:
+        assert isinstance(get_message_dict, dict), type(get_message_dict)
+
+        if get_message_dict['body'] == sample_send_message_dict['comment_str']:
+            delete_response = github.delete_repo_commit_comment(
+                owner=sample_send_message_dict['owner'],
+                repo=sample_send_message_dict['repo'],
+                comment_id=get_message_dict['id']
+            )
+
+            assert delete_response.ok
+
 
 def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
 
@@ -222,7 +285,7 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     body = sample_todo_list_was_hr[0]['comment_str']
 
     # post a message before test
-    todo_processor.post_repo_commit_comment(owner, repo, sha, body)
+    post_response = todo_processor.post_repo_commit_comment(owner, repo, sha, body)
 
     # function under test
     result = todo_processor.was_last_message_within_hours(
@@ -232,3 +295,14 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     )
 
     assert result
+
+    post_response_dict = post_response.json()
+    delete_response = todo_processor.delete_repo_commit_comment(
+        owner=owner,
+        repo=repo,
+        comment_id=post_response_dict['id'],
+    )
+
+    assert delete_response.ok, delete_response
+
+    cleanup_repo_commit_comments(todo_processor, sample_todo_list_was_hr[0])
