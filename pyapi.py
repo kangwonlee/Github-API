@@ -331,6 +331,23 @@ class GitHub(object):
 
         return self.session.delete(url)
 
+    def consolidate_repo_messages(self, owner, repo):
+        """
+        Consolidate multiple commit comments of a repository
+        """
+
+        # TODO : get a list of repo comments
+        # TODO : check if messages are overlapping
+
+
+        repo_message_response = self.get_repo_comments(owner=owner, repo=repo)
+
+        repo_message_list = repo_message_response.json()
+
+        df = pandas.DataFrame(repo_message_list)
+
+        for repo_message_dict in repo_message_list:
+
 
 class GitHubToDo(GitHub):
     def __init__(self, todo_list, api_token=False, api_auth=False, api_url=False):
