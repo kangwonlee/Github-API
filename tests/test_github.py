@@ -124,6 +124,15 @@ def test_post_repo_commit_comment(get_auth):
     ]
     assert all(key in response_dict for key in expected_keys), post_result
 
+    # delete posted message
+    delete_result = github.delete_repo_commit_comment(
+        owner=post_info['owner'],
+        repo=post_info['repo'],
+        comment_id=response_dict['id'],
+    )
+
+    assert delete_result.ok, f'Not deleted: {delete_result}'
+
 
 def test_post_repo_issue_comment(get_auth):
     """
