@@ -117,7 +117,7 @@ def test_post_repo_commit_comment(get_auth, info):
         comment_str='test ok?',
     )
 
-    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+    assert post_result.ok, f'Not authorized {post_result}'
 
     response_dict = post_result.json()
 
@@ -160,7 +160,7 @@ def test_post_repo_issue_comment(get_auth, info):
         comment_str='test ok?',
     )
 
-    assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
+    assert post_result.ok, f'Not authorized {post_result}'
 
     response_dict = post_result.json()
 
