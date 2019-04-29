@@ -299,4 +299,4 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
 
     assert delete_response.ok, delete_response
 
-    cleanup_repo_commit_comments(todo_processor, sample_todo_dict)
+    cleanup_repo_commit_comments(todo_processor, sample_todo_list_was_hr[0])
