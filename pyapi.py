@@ -343,6 +343,8 @@ class GitHub(object):
 
         repo_message_list = repo_message_response.json()
 
+        hr_timedelta = datetime.timedelta(3600 * hr)
+
         d = {}
 
         for repo_message_dict in repo_message_list:
