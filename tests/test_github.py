@@ -152,7 +152,7 @@ def test_post_repo_issue_comment(get_auth):
 
     assert not post_result.content.strip().endswith(b'[401]'), 'Not authorized'
 
-    response_dict = json.loads(post_result.content)
+    response_dict = post_result.json()
 
     assert isinstance(response_dict, dict), type(response_dict)
 
