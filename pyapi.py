@@ -389,10 +389,7 @@ class GitHubToDo(GitHub):
                     print(f"now_datetime = {now_datetime}")
 
                 # naive -> aware
-                utc_time_str = existing_comment_dict['updated_at'][:-1] + '+0000'
-                # https://stackoverflow.com/posts/18795714/revisions
-                existing_time_datetime = datetime.datetime.strptime(
-                    utc_time_str, "%Y-%m-%dT%H:%M:%S%z")
+                existing_time_datetime = get_comment_utc_time(existing_comment_dict['updated_at'])
 
                 if b_verbose:
                     print(f"existing_time_datetime = {existing_time_datetime}")
