@@ -339,14 +339,15 @@ class GitHub(object):
         # TODO : get a list of repo comments
         # TODO : check if messages are overlapping
 
-
         repo_message_response = self.get_repo_comments(owner=owner, repo=repo)
 
         repo_message_list = repo_message_response.json()
 
-        df = pandas.DataFrame(repo_message_list)
+        d = {}
 
         for repo_message_dict in repo_message_list:
+            d['commit_id'] = d.get(
+                repo_message_dict['commit_id'], []).append(repo_message_dict)
 
 
 class GitHubToDo(GitHub):
