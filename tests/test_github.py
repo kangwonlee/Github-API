@@ -14,7 +14,9 @@ def get_auth():
 
     auth = pyapi.get_basic_auth()
 
-    return auth
+    yield auth
+
+    del auth
 
 
 def test_get_repo_comments_public():
