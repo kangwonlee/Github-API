@@ -240,26 +240,30 @@ def test_GitHubToDo_run_todo(sample_todo_list, get_auth):
     # cleanup
     # sample loop
     for sample_todo_dict in sample_todo_list:
-        get_message_response = todo_processor.get_repo_commit_comments(
-            sample_todo_dict['owner'],
-            sample_todo_dict['repo'],
-            sample_todo_dict['sha'],
-        )
+        cleanup_repo_commit_comments(todo_processor, sample_todo_dict)
 
-        message_list = get_message_response.json()
 
-        # message loop
-        for message_dict in message_list:
-            assert isinstance(message_dict, dict), type(message_dict)
+def cleanup_repo_commit_comments(github, sample_send_message_dict):
+    get_message_response = github.get_repo_commit_comments(
+        sample_send_message_dict['owner'],
+        sample_send_message_dict['repo'],
+        sample_send_message_dict['sha'],
+    )
 
-            if message_dict['body'] == sample_todo_dict['comment_str']:
-                delete_response = todo_processor.delete_repo_commit_comment(
-                    owner=sample_todo_dict['owner'],
-                    repo=sample_todo_dict['repo'],
-                    comment_id=message_dict['id']
-                )
+    get_message_list = get_message_response.json()
 
-                assert delete_response.ok
+    # message loop
+    for get_message_dict in get_message_list:
+        assert isinstance(get_message_dict, dict), type(get_message_dict)
+
+        if get_message_dict['body'] == sample_send_message_dict['comment_str']:
+            delete_response = github.delete_repo_commit_comment(
+                owner=sample_send_message_dict['owner'],
+                repo=sample_send_message_dict['repo'],
+                comment_id=get_message_dict['id']
+            )
+
+            assert delete_response.ok
 
 
 def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_auth):
@@ -294,3 +298,5 @@ def test_GitHubToDo_was_last_message_within_hours(sample_todo_list_was_hr, get_a
     )
 
     assert delete_response.ok, delete_response
+
+    cleanup_repo_commit_comments(todo_processor, sample_todo_dict)
