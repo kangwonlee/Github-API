@@ -347,12 +347,30 @@ class GitHub(object):
 
         d = {}
 
+        # repo message loop
         for repo_message_dict in repo_message_list:
             repo_message_dict['created_at'] = get_comment_utc_time(repo_message_dict['created_at'])
             repo_message_dict['updated_at'] = get_comment_utc_time(repo_message_dict['updated_at'])
 
             d['commit_id'] = d.get(
                 repo_message_dict['commit_id'], []).append(repo_message_dict)
+
+        delete_these = []
+
+        # commit sha loop
+        for sha in d:
+            if 1 < len(d[sha]):
+                d[sha].sort(key=lambda msg_dict: msg_dict['updated_at'])
+
+                for k in range(1, len(d[sha])):
+                    b_time_too_close = (d[sha][k]['updated_at'] - d[sha][k-1]['updated_at']).total_seconds() < hr_timedelta
+                    b_body_same = d[sha][k]['body'] == d[sha][k-1]['body']
+                    b_same_user = d[sha][k]['user']['login'] == d[sha][k-1]['user']['login']
+
+                    if all([b_time_too_close, b_body_same, b_same_user,]):
+                        delete_these.append(d[sha][k])
+
+        return delete_these
 
 
 class GitHubToDo(GitHub):
