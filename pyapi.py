@@ -349,8 +349,10 @@ class GitHub(object):
 
         # repo message loop
         for repo_message_dict in repo_message_list:
-            repo_message_dict['created_at'] = get_comment_utc_time(repo_message_dict['created_at'])
-            repo_message_dict['updated_at'] = get_comment_utc_time(repo_message_dict['updated_at'])
+            repo_message_dict['created_at'] = get_comment_utc_time(
+                repo_message_dict['created_at'])
+            repo_message_dict['updated_at'] = get_comment_utc_time(
+                repo_message_dict['updated_at'])
 
             d['commit_id'] = d.get(
                 repo_message_dict['commit_id'], []).append(repo_message_dict)
@@ -363,11 +365,13 @@ class GitHub(object):
                 d[sha].sort(key=lambda msg_dict: msg_dict['updated_at'])
 
                 for k in range(1, len(d[sha])):
-                    b_time_too_close = (d[sha][k]['updated_at'] - d[sha][k-1]['updated_at']).total_seconds() < hr_timedelta
+                    b_time_too_close = (
+                        d[sha][k]['updated_at'] - d[sha][k-1]['updated_at']).total_seconds() < hr_timedelta
                     b_body_same = d[sha][k]['body'] == d[sha][k-1]['body']
-                    b_same_user = d[sha][k]['user']['login'] == d[sha][k-1]['user']['login']
+                    b_same_user = d[sha][k]['user']['login'] == d[sha][k -
+                                                                       1]['user']['login']
 
-                    if all([b_time_too_close, b_body_same, b_same_user,]):
+                    if all([b_time_too_close, b_body_same, b_same_user, ]):
                         delete_these.append(d[sha][k])
 
         return delete_these
@@ -412,7 +416,8 @@ class GitHubToDo(GitHub):
                     print(f"now_datetime = {now_datetime}")
 
                 # naive -> aware
-                existing_time_datetime = get_comment_utc_time(existing_comment_dict['updated_at'])
+                existing_time_datetime = get_comment_utc_time(
+                    existing_comment_dict['updated_at'])
 
                 if b_verbose:
                     print(f"existing_time_datetime = {existing_time_datetime}")
