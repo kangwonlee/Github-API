@@ -599,6 +599,12 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
                 retry_list.append(todo_dict)
 
         if retry_list:
+
+            print(
+                f"# sent messages == {len(response_list) - len(retry_list)}\n"
+                f"len(retry_list) == {len(retry_list)}\n"
+            )
+
             retry_todo_processor = GitHubToDo(
                 todo_list=retry_list,
                 api_auth=get_basic_auth(),
