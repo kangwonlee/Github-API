@@ -459,6 +459,7 @@ class GitHubToDo(GitHub):
         b_wait_between = False
 
         if 100 < len(self.todo_list):
+            print("wait between messages")
             b_wait_between = True
 
         for message_dict in self.todo_list:
