@@ -574,7 +574,7 @@ def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
     return todo_list
 
 
-def process_todo_list_json_file(*todo_list_json_filename_list):
+def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
     message_list = get_unique_message_list(todo_list_json_filename_list)
 
     if message_list:
@@ -584,7 +584,8 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
         )
         response_list = todo_processor.run_todo()
 
-        print(f'len(response_list) = {len(response_list)}')
+        if b_verbose:
+            print(f'\alen(response_list) = {len(response_list)}')
 
         retry_list = []
 
@@ -600,11 +601,11 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
                 retry_list.append(todo_dict)
 
         if retry_list:
-
-            print(
-                f"# sent messages == {len(response_list) - len(retry_list)}\n"
-                f"len(retry_list) == {len(retry_list)}\n"
-            )
+            if b_verbose:
+                print(
+                    f"# sent messages == {len(response_list) - len(retry_list)}\n"
+                    f"len(retry_list) == {len(retry_list)}\n"
+                )
 
             retry_todo_processor = GitHubToDo(
                 todo_list=retry_list,
@@ -624,7 +625,8 @@ def process_todo_list_json_file(*todo_list_json_filename_list):
                     print(f'response.json() = {response.json()}')
                     retry_retry_list.append(todo_dict)
 
-            print(f'len(retry_retry_list) = {len(retry_retry_list)}')
+            if b_verbose:
+                print(f'\alen(retry_retry_list) = {len(retry_retry_list)}')
 
 
 def main(argv):
