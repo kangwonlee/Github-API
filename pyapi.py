@@ -606,9 +606,9 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
         if b_verbose:
             print(
                 '\a'
-                f"# sent messages == {len(message_list) - len(retry_list) - duplicate_counter}\n"
-                f"# duplicate     == {duplicate_counter}\n"
-                f"len(retry_list) == {len(retry_list)}\n"
+                f"# sent messages == {(len(message_list) - len(retry_list) - duplicate_counter):5d}\n"
+                f"# duplicate     == {duplicate_counter:5d}\n"
+                f"len(retry_list) == {len(retry_list):5d}\n"
             )
 
         if retry_list:
