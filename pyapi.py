@@ -453,7 +453,7 @@ class GitHubToDo(GitHub):
 
         return b_result
 
-    def run_todo(self):
+    def run_todo(self, b_verbose=False):
         response_list = []
 
         b_wait_between = False
