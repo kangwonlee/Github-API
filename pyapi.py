@@ -454,7 +454,6 @@ class GitHubToDo(GitHub):
         return b_result
 
     def run_todo(self, b_verbose=False):
-        response_list = []
 
         b_wait_between = False
 
@@ -486,9 +485,7 @@ class GitHubToDo(GitHub):
                 else:
                     raise NotImplementedError(repr(message_dict))
 
-            response_list.append(response)
-
-        return response_list
+            yield message_dict, response
 
 
 def get_comment_utc_time(github_comment_time_str):
@@ -593,55 +590,62 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
             todo_list=message_list,
             api_auth=get_basic_auth(),
         )
-        response_list = todo_processor.run_todo()
-
-        if b_verbose:
-            print(f'\alen(response_list) = {len(response_list)}')
 
         retry_list = []
         duplicate_counter = 0
 
-        # TODO : consider yielding todo_dict and response in GitHubToDo.run_todo()
-        for todo_dict, response in zip(message_list, response_list):
-            if isinstance(response, requests.Response):
-                if not response.codes.ok:
-                    if b_verbose:
-                        print(f'todo_dict = {todo_dict}')
-                        print(f'response = {response}')
-                        print(f'response.json() = {response.json()}')
-                    retry_list.append(todo_dict)
-            elif not response:
-                duplicate_counter += 1
+        for todo_dict, response in todo_processor.run_todo():
+            duplicate_counter = process_response(
+                todo_dict,
+                response,
+                duplicate_counter=duplicate_counter,
+                b_verbose=b_verbose,
+                retry_list=retry_list,
+            )
 
         if b_verbose:
             print(
-                f"# sent messages == {len(response_list) - len(retry_list) - duplicate_counter}\n"
+                '\a'
+                f"# sent messages == {len(message_list) - len(retry_list) - duplicate_counter}\n"
                 f"# duplicate     == {duplicate_counter}\n"
                 f"len(retry_list) == {len(retry_list)}\n"
             )
 
         if retry_list:
-
-            retry_todo_processor = GitHubToDo(
-                todo_list=retry_list,
-                api_auth=get_basic_auth(),
-            )
-            retry_response_list = retry_todo_processor.run_todo()
+            todo_processor.todo_list = retry_list
 
             retry_retry_list = []
+            duplicate_counter = 0
 
-            for todo_dict, response in zip(retry_list, retry_response_list):
-                # https://stackoverflow.com/questions/38283596/how-to-format-json-data-when-writing-to-a-file
-                try:
-                    response.raise_for_status()
-                except requests.exceptions.HTTPError:
-                    print(f'todo_dict = {todo_dict}')
-                    print(f'response = {response}')
-                    print(f'response.json() = {response.json()}')
-                    retry_retry_list.append(todo_dict)
+            for todo_dict, response in todo_processor.run_todo():
+                duplicate_counter = process_response(
+                    todo_dict,
+                    response,
+                    duplicate_counter=duplicate_counter,
+                    b_verbose=b_verbose,
+                    retry_list=retry_retry_list,
+                )
 
             if b_verbose:
                 print(f'\alen(retry_retry_list) = {len(retry_retry_list)}')
+
+
+def process_response(todo_dict, response, duplicate_counter=0, b_verbose=True, retry_list=[],):
+    if isinstance(response, requests.Response):
+        if not response.codes.ok:
+            if b_verbose:
+                print(f'todo_dict = {todo_dict}')
+                print(f'response = {response}')
+                print(f'response.json() = {response.json()}')
+            retry_list.append(todo_dict)
+
+            if 403 == response.status_code:
+                time.sleep(1.0)
+
+    elif not response:
+        duplicate_counter += 1
+
+    return duplicate_counter
 
 
 def main(argv):
