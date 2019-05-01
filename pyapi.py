@@ -583,6 +583,11 @@ def get_unique_message_list(todo_list_json_filename_list, b_verbose=False):
 def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
     message_list = get_unique_message_list(todo_list_json_filename_list)
 
+    if b_verbose:
+        print(
+            f'\alen(message_list) = {len(message_list)}\n'
+        )
+
     if message_list:
         todo_processor = GitHubToDo(
             todo_list=message_list,
