@@ -613,13 +613,14 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
             elif not response:
                 duplicate_counter += 1
 
+        if b_verbose:
+            print(
+                f"# sent messages == {len(response_list) - len(retry_list) - duplicate_counter}\n"
+                f"# duplicate     == {duplicate_counter}\n"
+                f"len(retry_list) == {len(retry_list)}\n"
+            )
+
         if retry_list:
-            if b_verbose:
-                print(
-                    f"# sent messages == {len(response_list) - len(retry_list) - duplicate_counter}\n"
-                    f"# duplicate     == {duplicate_counter}\n"
-                    f"len(retry_list) == {len(retry_list)}\n"
-                )
 
             retry_todo_processor = GitHubToDo(
                 todo_list=retry_list,
