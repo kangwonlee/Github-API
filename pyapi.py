@@ -594,6 +594,7 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
             print(f'\alen(response_list) = {len(response_list)}')
 
         retry_list = []
+        duplicate_counter = 0
 
         for todo_dict, response in zip(message_list, response_list):
             if isinstance(response, requests.Response):
@@ -603,6 +604,8 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
                         print(f'response = {response}')
                         print(f'response.json() = {response.json()}')
                     retry_list.append(todo_dict)
+            elif not response:
+                duplicate_counter += 1
 
         if retry_list:
             if b_verbose:
