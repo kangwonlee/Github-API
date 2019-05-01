@@ -640,7 +640,8 @@ def process_response(todo_dict, response, duplicate_counter=0, b_verbose=True, r
             retry_list.append(todo_dict)
 
             if 403 == response.status_code:
-                time.sleep(1.0)
+                if "You have triggered an abuse detection mechanism" in response.json()['message']:
+                    time.sleep(1.0)
 
     elif not response:
         duplicate_counter += 1
