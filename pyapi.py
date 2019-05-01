@@ -601,6 +601,7 @@ def process_todo_list_json_file(*todo_list_json_filename_list, b_verbose=True):
         retry_list = []
         duplicate_counter = 0
 
+        # TODO : consider yielding todo_dict and response in GitHubToDo.run_todo()
         for todo_dict, response in zip(message_list, response_list):
             if isinstance(response, requests.Response):
                 if not response.codes.ok:
